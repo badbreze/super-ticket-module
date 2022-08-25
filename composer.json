@@ -1,7 +1,6 @@
 {
     "name": "badbreze/super-ticket-system",
     "description": "An Yii2 Ticket System Module",
-    "minimum-stability": "stable",
     "license": "GPL-3.0-or-later",
     "authors": [
         {
