@@ -1,0 +1,22 @@
+{
+    "name": "badbreze/super-ticket-system",
+    "description": "An Yii2 Ticket System Module",
+    "minimum-stability": "stable",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "badbreze",
+            "email": "racksoft+githubprojects@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "trntv/yii2-aceeditor": "^2.0.0",
+        "php-imap/php-imap": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "super\\ticket\\": "src"
+        }
+    }
+}
