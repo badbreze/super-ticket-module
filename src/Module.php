@@ -11,7 +11,6 @@ class Module extends \yii\base\Module
      */
     public $controllerNamespace = 'super\ticket\controllers';
 
-
     /**
      * {@inheritdoc}
      */
@@ -22,7 +21,10 @@ class Module extends \yii\base\Module
         $this->modules = [
             'api' => [
                 'class' => modules\api\Module::class
-            ]
+            ],
+            'console' => [
+                'class' => modules\console\Module::class
+            ],
         ];
     }
 }

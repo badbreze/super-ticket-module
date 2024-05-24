@@ -13,8 +13,8 @@ class SuperBootstrap implements \yii\base\BootstrapInterface
     {
         \Yii::$app->urlManager
             ->addRules([
-                           'o/<status_identifier:[aA-zZ\_]+>/<domain_id:[0-9]+>' => '/super/ticket/list',
-                           'o/<domain_id:[0-9]+>/t/<ticket_id:[0-9]+>' => '/super/ticket/detail',
+                           'o/<domain_id:[0-9]+>' => '/super/ticket/list',
+                           't/<ticket_id:[0-9]+>' => '/super/ticket/detail',
                            //'work/<domain_id:[^\/]+>/<ticket_id:[^\/]+>' => '/super/ticket/detail',
                        ], false);
     }

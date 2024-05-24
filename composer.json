@@ -10,8 +10,11 @@
     ],
     "require": {
         "php": ">=7.4",
+
+        "2amigos/yii2-tinymce-widget" : "*",
+        "php-imap/php-imap": "*",
         "trntv/yii2-aceeditor": "^2.0.0",
-        "php-imap/php-imap": "*"
+        "yiisoft/yii2-bootstrap5": "*"
     },
     "autoload": {
         "psr-4": {
