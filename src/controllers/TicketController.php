@@ -6,10 +6,12 @@ use super\ticket\base\Controller;
 use super\ticket\helpers\RouteHelper;
 use super\ticket\helpers\TicketHelper;
 use super\ticket\models\forms\TicketCommentForm;
+use super\ticket\models\SuperDomain;
 use super\ticket\models\SuperTicket;
 use super\ticket\models\SuperTicketEvent;
 use yii\data\ActiveDataProvider;
 use yii\helpers\Url;
+use yii\helpers\Json;
 
 /**
  * Default controller for the `super` module
@@ -38,14 +40,21 @@ class TicketController extends Controller
         $tickets = SuperTicket::find()
             ->joinWith('team')
             ->joinWith('status')
-            ->orderBy(['super_ticket.created_at' => SORT_DESC])
-            ->andWhere(['super_team.domain_id' => $domain_id]);
+            //->orderBy(['super_ticket.created_at' => SORT_DESC])
+            ->andWhere(['super_ticket.domain_id' => $domain_id]);
 
         if ($status_identifier) {
             $tickets->andWhere(['super_ticket_status.identifier' => $status_identifier]);
         }
 
-        $dataProvider = new ActiveDataProvider(['query' => $tickets]);
+        $dataProvider = new ActiveDataProvider([
+            'query' => $tickets,
+            'sort' => [
+                'defaultOrder' => [
+                    'created_at' => SORT_DESC
+                ]
+            ],
+        ]);
 
         //$dataProvider->pagination->setPageSize(20);
 
@@ -105,4 +114,39 @@ class TicketController extends Controller
 
         return $this->redirect(RouteHelper::toTicket($ticket_id));
     }
+
+    public function actionSearch($q)
+    {
+        $domains = SuperDomain::find()
+            ->asArray();
+
+        $response = [];
+
+        foreach ($domains->all() as $domain) {
+            $element = [
+                'id' => $domain['id'],
+                'name' => $domain['name'],
+            ];
+
+            $tickets = SuperTicket::find()
+                ->andWhere([
+                               'AND',
+                               ['like', 'subject', $q],
+                               ['domain_id' => $domain['id']]
+                           ])
+                ->asArray();
+
+            foreach ($tickets->all() as $ticket) {
+                $element['platforms'][] = [
+                    'id' => $ticket['id'],
+                    'name' => $ticket['subject'],
+                ];
+            }
+
+            $response[] = $element;
+        }
+
+        return Json::encode($response);
+    }
+
 }

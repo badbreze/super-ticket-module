@@ -20,7 +20,7 @@ $currentStatus = StatusHelper::getCurrentStatus();
         <ul class="navbar-nav bd-navbar-nav flex-row">
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#domains" data-toggle="dropdown">
-                    <i class="fab fa-avianex"></i> <?= \super\ticket\helpers\DomainHelper::getCurrentDomainName() ?: Yii::t('super', 'Generale'); ?>
+                    <i class="fab fa-avianex"></i> <?= \super\ticket\helpers\DomainHelper::getCurrentDomainName() ?: Yii::t('super', 'General'); ?>
                 </a>
                 <div class="dropdown-menu">
                     <?php foreach ($domains as $availableDomain): ?>
@@ -46,7 +46,7 @@ $currentStatus = StatusHelper::getCurrentStatus();
 
     <div class="form-inline my-3 my-lg-0 mx-auto ml-sm-auto mr-sm-0">
 
-        <div class="nav-item dropdown">
+        <div class="nav-item dropdown dropleft">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
                 <i class="fas fa-cogs"></i>
             </a>
@@ -79,7 +79,7 @@ $currentStatus = StatusHelper::getCurrentStatus();
             </div>
         </div>
 
-        <div class="nav-item dropdown">
+        <div class="nav-item dropdown dropleft">
             <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
                 <?php if ($profile && $profile->getAvatar()) : ?>
                     <img class="icon icon-primary rounded-circle"

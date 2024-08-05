@@ -1,5 +1,5 @@
 <?php
 
 return [
-    'ticket_activity_comment' => 'New Comment to the Ticket'
+    'ticket_activity_comment' => 'New Comment to the Ticket',
 ];

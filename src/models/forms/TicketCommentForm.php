@@ -1,17 +1,31 @@
 <?php
 namespace super\ticket\models\forms;
 
+use elitedivision\amos\attachments\behaviors\FileBehavior;
 use super\ticket\models\SuperTicketEvent;
 use Yii;
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
 
 /**
  * ContactForm is the model behind the contact form.
  */
 class TicketCommentForm extends Model
 {
+    public $id;
     public $ticket_id;
     public $body;
+    public $user_id;
+    public $isNewRecord = true;
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            'fileBehavior' => [
+                'class' => FileBehavior::className()
+            ]
+        ]);
+    }
 
     /**
      * @return array the validation rules.
@@ -23,6 +37,8 @@ class TicketCommentForm extends Model
             [['ticket_id', 'body'], 'required'],
             [['ticket_id'], 'integer'],
             [['body'], 'string'],
+            [['id'], 'safe'],
+            [['attachments'], 'file', 'maxFiles' => 0, 'maxSize' => 10240],
         ];
     }
 
@@ -34,6 +50,8 @@ class TicketCommentForm extends Model
         return [
             'verifyCode' => 'Verification Code',
         ];
+
+        Yii::$app->db->createCommand()->execute();
     }
 
     public function save() {
@@ -42,7 +60,7 @@ class TicketCommentForm extends Model
                 $this->ticket_id,
                 SuperTicketEvent::TYPE_COMMENT,
                 $this->body,
-                null
+                $this->user_id
             );
         }
 

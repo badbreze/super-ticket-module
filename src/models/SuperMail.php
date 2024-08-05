@@ -3,12 +3,15 @@
 namespace super\ticket\models;
 
 use super\ticket\db\ActiveRecord;
+use super\ticket\modules\console\base\MailBox;
+use super\ticket\modules\console\helpers\EmailHelper;
 use Yii;
 
 /**
  * This is the model class for table "{{%super_mail}}".
  *
  * @property int $id
+ * @property int $enabled Enabled
  * @property string $name Name
  * @property string|null $username
  * @property string|null $password
@@ -32,10 +35,6 @@ use Yii;
  * @property int|null $created_by Creato da
  * @property int|null $updated_by Aggiornato da
  * @property int|null $deleted_by Cancellato da
- *
- * @property User $createdBy
- * @property User $deletedBy
- * @property User $updatedBy
  *
  * @property SuperDomain $domain
  * @property SuperAgent $agent
@@ -65,15 +64,34 @@ class SuperMail extends ActiveRecord
     public function rules()
     {
         return [
-            [['name','team_id', 'domain_id'], 'required'],
-            [['domain_id', 'team_id', 'status_id', 'priority_id', 'agent_id', 'port', 'skip_ssl_validation', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
+            [['name', 'team_id', 'domain_id'], 'required'],
+            [
+                [
+                    'enabled',
+                    'domain_id',
+                    'team_id',
+                    'status_id',
+                    'priority_id',
+                    'agent_id',
+                    'port',
+                    'skip_ssl_validation',
+                    'created_by',
+                    'updated_by',
+                    'deleted_by'
+                ],
+                'integer'
+            ],
+            [['enabled'], 'checkConfig'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
-            [['name','path','move_path'], 'string', 'max' => 64],
+            [['name', 'path', 'move_path'], 'string', 'max' => 64],
             [['username', 'password', 'host', 'type', 'address', 'metadata'], 'string', 'max' => 255],
-            [['domain_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperDomain::className(), 'targetAttribute' => ['domain_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
-            [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['deleted_by' => 'id']],
+            [
+                ['domain_id'],
+                'exist',
+                'skipOnError' => true,
+                'targetClass' => SuperDomain::className(),
+                'targetAttribute' => ['domain_id' => 'id']
+            ],
         ];
     }
 
@@ -84,6 +102,7 @@ class SuperMail extends ActiveRecord
     {
         return [
             'id' => Yii::t('super', 'ID'),
+            'enabled' => Yii::t('super', 'Enabled'),
             'name' => Yii::t('super', 'Name'),
             'username' => Yii::t('super', 'Username'),
             'password' => Yii::t('super', 'Password'),
@@ -103,6 +122,32 @@ class SuperMail extends ActiveRecord
             'updated_by' => Yii::t('super', 'Updated By'),
             'deleted_by' => Yii::t('super', 'Deleted By'),
         ];
+    }
+
+    public function checkConfig($model)
+    {
+        if (!$this->enabled) {
+            return true;
+        }
+
+        $mailbox = new MailBox([
+                                   'connection' => EmailHelper::getMailBoxConnection($this)
+                               ]);
+
+        try {
+            $mailbox->getMailIds();
+            return true;
+        } catch (\Exception $e) {
+            $this->addError(
+                'enabled',
+                \Yii::t(
+                    'super', 'Mail Configuration is Invalid ({error})',
+                    ['error' => $e->getMessage()]
+                )
+            );
+        }
+
+        return false;
     }
 
     /**
@@ -185,7 +230,8 @@ class SuperMail extends ActiveRecord
         return $this->hasOne(User::className(), ['id' => 'updated_by']);
     }
 
-    public function getFolder() {
+    public function getFolder()
+    {
         return empty($this->path) ? 'INBOX' : $this->path;
     }
 }

@@ -2,10 +2,13 @@
 
 namespace super\ticket\models;
 
+use elitedivision\amos\attachments\behaviors\FileBehavior;
+use elitedivision\amos\attachments\models\File;
 use super\ticket\db\ActiveRecord;
 use Yii;
 use yii\base\Event;
 use yii\db\ActiveQuery;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%super_ticket}}".
@@ -39,6 +42,7 @@ use yii\db\ActiveQuery;
  * @property SuperTicketStatus $status
  * @property SuperUser $user
  * @property SuperTicketEvent[] $events
+ * @property SuperTicketEvent $lastEvent
  * @property SuperTicket[] $relatedTickets
  * @property SuperTicket[] $dependantTickets
  * @property SuperTicketLink[] $links
@@ -47,6 +51,7 @@ use yii\db\ActiveQuery;
  * @property SuperTicketPriority[] $availablePriorities
  * @property SuperAgent[] $availableAssignees
  * @property SuperTicketFollower[] $followers
+ * @property File[] $attachments
  */
 class SuperTicket extends ActiveRecord
 {
@@ -58,6 +63,15 @@ class SuperTicket extends ActiveRecord
     public static function tableName()
     {
         return '{{%super_ticket}}';
+    }
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            'fileBehavior' => [
+                'class' => FileBehavior::className()
+            ]
+        ]);
     }
 
     /**
@@ -85,6 +99,8 @@ class SuperTicket extends ActiveRecord
             ],
             [['due_date', 'created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['subject'], 'string', 'max' => 255],
+
+            [['attachments'], 'file', 'maxFiles' => 0],
         ];
     }
 
@@ -128,6 +144,8 @@ class SuperTicket extends ActiveRecord
     public function refreshDueDate()
     {
         $startDate = new \DateTime($this->created_at);
+
+
     }
 
     /**
@@ -211,15 +229,21 @@ class SuperTicket extends ActiveRecord
         return $this->hasMany(SuperTicketEvent::className(), ['ticket_id' => 'id']);
     }
 
+    public function getLastEvent() {
+        return self::getEvents()->orderBy(['created_at' => SORT_DESC])->one();
+    }
+
     /**
      * Gets query for [[SuperTicketEvents]].
      *
+     * @param $exclusions integer user to exclude
      * @return \yii\db\ActiveQuery
      */
-    public function getFollowers()
+    public function getFollowers($exclusions = 0)
     {
         return $this
             ->hasMany(SuperTicketFollower::className(), ['ticket_id' => 'id'])
+            ->andOnCondition(['<>', 'super_user_id', $exclusions])
             ->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
     }
 
@@ -322,5 +346,16 @@ class SuperTicket extends ActiveRecord
         );
 
         return $this->save(false);
+    }
+
+    public function changeStatus($identifier) {
+        $status = SuperTicketStatus::findOne(['identifier' => $identifier]);
+
+        if($status && $status->id) {
+            $this->status_id = $status->id;
+            return $this->save(false);
+        }
+
+        throw new \Exception("The Status {$identifier} doe not exists");
     }
 }

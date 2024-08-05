@@ -90,7 +90,7 @@ jQuery(document).ready(function() {
 
         if(jQuery(this).val() != "" && jQuery(this).val().length >= 3) {
             jQuery.getJSON(
-                '/platforms/platforms/search',
+                '/super/ticket/search',
                 {
                     q: jQuery(this).val()
                 },
@@ -108,7 +108,7 @@ jQuery(document).ready(function() {
                     jQuery(data).each(function(index, value) {
                         var element = jQuery('<a class="dropdown-item"/>');
 
-                        element.attr('href', '/platforms/platforms/by-project?id='+value.id);
+                        element.attr('href', '/o/'+value.id);
                         element.text(value.name);
 
                         jQuery('#globalSearchResults').append(element);
@@ -117,7 +117,7 @@ jQuery(document).ready(function() {
                             var subblock = jQuery('<nav class="nav nav-pills flex-column"/>');
                             jQuery(value.platforms).each(function(index, value) {
                                 var subelement = jQuery('<a class="nav-link ml-3"/>');
-                                subelement.attr('href', '/platforms/platforms/detail?id='+value.id);
+                                subelement.attr('href', '/t/'+value.id);
                                 subelement.text(value.name);
                                 //jQuery('#globalSearchResults').append('<a href="/platforms/platforms/' + value.id + '" class="dropdown-item" id="' + value.id + '">' + value.name + '</a>');
                                 subblock.append(subelement);

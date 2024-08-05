@@ -17,7 +17,7 @@ $currentStatus = StatusHelper::getCurrentStatus();
 ?>
 <div class="col-sm-2 p-0">
     <div class="ticket-sidebar p-3 h-100">
-        <div class="row mb-4">
+        <!--div class="row mb-4">
             <div class="col text-center">
                 <div class="btn-group">
                     <a href="#" type="button" class="btn btn-primary align-middle">
@@ -28,7 +28,7 @@ $currentStatus = StatusHelper::getCurrentStatus();
                     </a>
                 </div>
             </div>
-        </div>
+        </div-->
         <div class="row mb-4">
             <div class="col">
                 <h6 class="">Stato</h6>

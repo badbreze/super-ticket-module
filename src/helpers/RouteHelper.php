@@ -3,6 +3,7 @@
 namespace super\ticket\helpers;
 
 use super\ticket\models\SuperTicket;
+use super\ticket\models\SuperTicketStatus;
 use yii\helpers\Url;
 
 class RouteHelper
@@ -13,7 +14,7 @@ class RouteHelper
         return true;
     }
 
-    public static function toOrganization($organization_id, $status = 'new')
+    public static function toOrganization($organization_id, $status = SuperTicketStatus::STATUS_OPEN, $scheme = false)
     {
         if (self::usePrettyUrl()) {
             return Url::to(["/o/{$organization_id}", "status_identifier" => $status]);
@@ -23,10 +24,10 @@ class RouteHelper
                            '/super/ticket/list',
                            'domain_id' => $organization_id,
                            'status_identifier' => $status
-                       ]);
+                       ], $scheme);
     }
 
-    public static function toTicket($ticket_id, $organization_id = null)
+    public static function toTicket($ticket_id, $organization_id = null, $scheme = false)
     {
         if (empty($organization_id)) {
             $ticket = SuperTicket::findOne(['id' => $ticket_id]);
@@ -34,14 +35,14 @@ class RouteHelper
         }
 
         if (self::usePrettyUrl()) {
-            return Url::to(["/t/{$ticket_id}"]);
+            return Url::to(["/t/{$ticket_id}"], $scheme);
         }
 
         return Url::to([
                            '/super/ticket/detail',
                            //'domain_id' => $organization_id,
                            'ticket_id' => $ticket_id
-                       ]);
+                       ], $scheme);
     }
 
     public static function updateTicketAttribute($ticket_id, $attribute, $value) {

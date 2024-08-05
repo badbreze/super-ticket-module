@@ -25,7 +25,10 @@ use Yii;
  */
 class SuperTicketStatus extends ActiveRecord
 {
-    //const STATUS_WIP = 'wip';
+    const STATUS_OPEN = 'open';
+    const STATUS_RESOLVED = 'resolved';
+    const STATUS_CLOSED = 'closed';
+    const STATUS_SUSTPENDED = 'suspended';
 
     /**
      * {@inheritdoc}

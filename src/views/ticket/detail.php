@@ -8,6 +8,8 @@ use super\ticket\helpers\TicketHelper;
 use super\ticket\helpers\StatusHelper;
 use super\ticket\helpers\RouteHelper;
 use super\ticket\helpers\HtmlHelper;
+use elitedivision\amos\attachments\components\AttachmentsInput;
+use elitedivision\amos\attachments\FileModule;
 
 $statuses = StatusHelper::getAvailableStatuses();
 
@@ -26,7 +28,7 @@ $statuses = StatusHelper::getAvailableStatuses();
     ]); ?>
     <div class="ticket-main-content col-sm-10 p-4">
         <div class="d-table-row">
-            <a href="<?= \yii\helpers\Url::previous(); ?>" class="btn btn-outline-dark d-table-cell">
+            <a href="<?= RouteHelper::toOrganization($ticket->domain_id); ?>" class="btn btn-outline-dark d-table-cell">
                 <i class="fa fa-arrow-left"></i>
             </a>
             <div class="d-table-cell">
@@ -35,8 +37,16 @@ $statuses = StatusHelper::getAvailableStatuses();
                 </h4>
             </div>
         </div>
+
+        <a href="#" class="btn btn-outline-dark float-right">
+            <i class="fas fa-ellipsis-h"></i>
+        </a>
+
         <p class="card-description mt-3">
-            Opened by <code><?= $ticket->user->fullName; ?></code> in <?= $ticket->created_at; ?>
+            <?= Yii::t('super', 'Opened by <code>{name}</code> in {date}', [
+                    'name' => $ticket->user->fullName,
+                    'date' => $ticket->created_at
+            ]); ?>
         </p>
         <div id="ticket_thread">
             <div id="thread-items">
@@ -45,6 +55,13 @@ $statuses = StatusHelper::getAvailableStatuses();
                         <?= HtmlHelper::fullClean($ticket->content); ?>
                     </p>
                 </blockquote>
+                <div class="attachments">
+                    <?php
+                        foreach ($ticket->attachments as $attachment) {
+                            echo $this->render('parts/attach_link', ['attachment' => $attachment]);
+                        }
+                    ?>
+                </div>
                 <?= $this->render('parts/relations', ['ticket' => $ticket]); ?>
                 <?php foreach ($ticket->events as $event): ?>
                     <div class="mb-3">
@@ -77,8 +94,21 @@ $statuses = StatusHelper::getAvailableStatuses();
                     'toolbar' => 'undo redo | formatselect | bold italic',
                 ]
             ])->label(false); ?>
+
+            <?= $form->field($commentModel, 'attachments')->fileInput([
+                'options' => [
+                    'multiple' => true,
+                    'placeholder' => ''
+                ],
+                'pluginOptions' => [
+                    'maxFileCount' => 5,
+                    'showPreview' => false,
+                    'msgPlaceholder' => Yii::t('super', "Nessun allegato inserito")
+                ]
+            ])->label(false); ?>
+
             <?= Html::submitButton(Yii::t('app', 'Send'), ['class' => 'btn btn-primary']) ?>
-            <?= Html::button(Yii::t('app', 'Send to Intranet'), ['class' => 'btn btn-info']) ?>
+            <?php /* Html::button(Yii::t('app', 'Send to Intranet'), ['class' => 'btn btn-info'])*/ ?>
             <?php
             ActiveForm::end();
             ?>

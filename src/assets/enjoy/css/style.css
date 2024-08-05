@@ -39,19 +39,19 @@ a.active {
 @keyframes  brand-anim {
 
     20% {
-        text-shadow: 5px -5px #000000, -5px 5px #ff8a8a;
+        text-shadow: 7px -5px #D5D5D5FF, -7px 7px #CCCCCCFF;
     }
 
     40% {
-        text-shadow: 5px 5px #000000, -5px -5px #ff8a8a;
+        text-shadow: 7px 7px #D5D5D5FF, -7px -7px #CCCCCCFF;
     }
 
     60% {
-        text-shadow: -5px 5px #000000, 5px -5px #ff8a8a;
+        text-shadow: -7px 7px #D5D5D5FF, 7px -7px #CCCCCCFF;
     }
 
     80% {
-        text-shadow: -5px -5px #000000, 5px 5px #ff8a8a;
+        text-shadow: -7px -7px #D5D5D5FF, 7px 7px #CCCCCCFF;
     }
 }
 

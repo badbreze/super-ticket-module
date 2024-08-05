@@ -36,7 +36,6 @@ class MailBox extends \yii\base\BaseObject
             return $this->_mailIds;
         }
 
-        Console::stdout("Finding for Emails...\n");
         $dateRange = date("d M Y", strToTime("-1 days"));
 
         $boxMailCheck = $this->connection->checkMailbox();
@@ -47,7 +46,11 @@ class MailBox extends \yii\base\BaseObject
 
         $boxMailCount = $boxMailCheck->Nmsgs;
 
-        $messageCount = 20;
+        if($boxMailCount == 0) {
+            return [];
+        }
+
+        $messageCount = $boxMailCount >= 20 ? 20 : $boxMailCount;
 
         $stream = $this->connection->getImapStream();
 
@@ -65,8 +68,6 @@ class MailBox extends \yii\base\BaseObject
      */
     public function getMailById($id)
     {
-        Console::stdout("Fetching email with ID: {$id}\n");
-
         return $this->connection->getMail($id);
     }
 
@@ -109,7 +110,6 @@ class MailBox extends \yii\base\BaseObject
         //The mailbox short path
         $newPath = reset($mailBoxes)['shortpath'];
 
-        print_r("Move the mail\n");
         $this->connection->moveMail($mail->id, $newPath);
 
         return true;

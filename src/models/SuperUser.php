@@ -43,11 +43,12 @@ class SuperUser extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'domain_id'], 'required'],
+            [['name'], 'required'],
             [['domain_id', 'user_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['name', 'surname', 'phone'], 'string', 'max' => 64],
             [['email'], 'string', 'max' => 128],
+            [['user_id'], 'unique'],
             [['domain_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperDomain::className(), 'targetAttribute' => ['domain_id' => 'id']],
             //[['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -100,7 +101,7 @@ class SuperUser extends ActiveRecord
      */
     public function getUser()
     {
-        return $this->hasOne(User::className(), ['id' => 'user_id']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'user_id']);
     }
 
     /**

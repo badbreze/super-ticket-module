@@ -8,7 +8,7 @@ use super\ticket\helpers\HtmlHelper;
 ?>
 <div class="ticket-comment-single">
     <div class="ticket-comment-info">
-        <?php if($event->creator->profile) : ?>
+        <?php if($event->creator) : ?>
         <div class="ticket-comment-avatar">
             <img class="avatar" src="<?= $event->creator->profile->getAvatar()->getUrl(
                 false,
@@ -20,7 +20,7 @@ use super\ticket\helpers\HtmlHelper;
         <div class="d-inline-block">
             <?= Yii::t('super', 'In'); ?>
             <?= $event->created_at; ?>
-            <code><?= $event->creator; ?></code>
+            <code><?= $event->superUser->fullName; ?></code>
             <?= Yii::t('super', 'wrote'); ?>
         </div>
         <hr class="mt-1" />
@@ -28,4 +28,12 @@ use super\ticket\helpers\HtmlHelper;
     <blockquote class="ticket-comment-body">
         <?= HtmlHelper::clean($event->body); ?>
     </blockquote>
+
+    <div class="attachments">
+        <?php
+        foreach ($event->attachments as $attachment) {
+            echo $this->render('attach_link', ['attachment' => $attachment]);
+        }
+        ?>
+    </div>
 </div>

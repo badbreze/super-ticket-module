@@ -44,7 +44,7 @@ class SuperTeam extends ActiveRecord
     public function rules()
     {
         return [
-            [['domain_id', 'name'], 'required'],
+            [['name'], 'required'],
             [['domain_id', 'agent_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['name'], 'string', 'max' => 64],
@@ -117,6 +117,7 @@ class SuperTeam extends ActiveRecord
     }
 
     public function getSignature() {
+
         return StringHelper::parse($this->mail_signature, ['team' => $this]);
     }
 }

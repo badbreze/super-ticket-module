@@ -76,7 +76,7 @@ use dosamigos\tinymce\TinyMce;
                     'statusbar' => false,
                     'toolbar' => 'undo redo | formatselect | bold italic',
                 ]
-            ])->label(false); ?>
+            ]); ?>
 
         </p>
         <?php $this->endBlock(); ?>

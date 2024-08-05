@@ -4,18 +4,14 @@ namespace super\ticket\controllers;
 
 use super\ticket\base\Controller;
 use dmstr\bootstrap\Tabs;
-use super\ticket\models\SuperDomain;
-use super\ticket\models\SuperMailer;
-use super\ticket\models\SuperTicket;
-use yii\base\Exception;
-use yii\data\ActiveDataProvider;
+use super\ticket\models\SuperMail;
 use yii\helpers\Url;
 use yii\web\HttpException;
 
 /**
- * This is the class for controller "DomainController".
+ * This is the class for controller "MailsController".
  */
-class DomainController extends Controller
+class MailsController extends Controller
 {
     /**
      * @var boolean whether to enable CSRF validation for the actions in this controller.
@@ -25,13 +21,13 @@ class DomainController extends Controller
 
 
     /**
-     * Lists all SuperDomain models.
+     * Lists all SuperMail models.
      * @return mixed
      */
     public function actionIndex()
     {
         $dataProvider = new \yii\data\ActiveDataProvider([
-                                                             'query' => SuperDomain::find(),
+                                                             'query' => SuperMail::find(),
                                                          ]);
 
         Tabs::clearLocalStorage();
@@ -45,27 +41,19 @@ class DomainController extends Controller
 
 
     /**
-     * Creates a new SuperDomain model.
+     * Creates a new SuperMail model.
      * If creation is successful, the browser will be redirected to the 'index' page.
      * @return mixed
      */
     public function actionCreate()
     {
-        $model = new SuperDomain;
-        $mailer = new SuperMailer();
-
-        $mailer->mail_template = '{{event.superUser.email}} {{content}}';
+        $model = new SuperMail;
 
         try {
             $model->load(\Yii::$app->request->post());
-            $mailer->load(\Yii::$app->request->post());
 
             if ($model->save()) {
-                $mailer->domain_id = $model->id;
-
-                if ($mailer->save()) {
                     return $this->redirect(['index', 'id' => $model->id]);
-                }
             }
         } catch (\Exception $e) {
             $msg = (isset($e->errorInfo[2])) ? $e->errorInfo[2] : $e->getMessage();
@@ -73,13 +61,12 @@ class DomainController extends Controller
         }
 
         return $this->render('create', [
-            'model' => $model,
-            'mailer' => $mailer
+            'model' => $model
         ]);
     }
 
     /**
-     * Updates an existing SuperDomain model.
+     * Updates an existing SuperMail model.
      * If update is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -87,26 +74,22 @@ class DomainController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $mailer = $model->mailer ?: new SuperMailer();
 
         if (\Yii::$app->request->isPost) {
             $model->load(\Yii::$app->request->post());
-            $mailer->load(\Yii::$app->request->post());
-            $mailer->domain_id = $model->id;
 
-            if ($model->save() && $mailer->save()) {
+            if ($model->save()) {
                 return $this->redirect(Url::previous());
             }
         }
 
         return $this->render('update', [
             'model' => $model,
-            'mailer' => $mailer,
         ]);
     }
 
     /**
-     * Deletes an existing SuperDomain model.
+     * Deletes an existing SuperMail model.
      * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
@@ -138,17 +121,17 @@ class DomainController extends Controller
     }
 
     /**
-     * Finds the SuperDomain model based on its primary key value.
+     * Finds the SuperMail model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return SuperDomain the loaded model
+     * @return SuperMail the loaded model
      * @throws HttpException if the model cannot be found
      */
     protected
     function findModel(
         $id
     ) {
-        if (($model = SuperDomain::findOne($id)) !== null) {
+        if (($model = SuperMail::findOne($id)) !== null) {
             return $model;
         } else {
             throw new HttpException(404, 'The requested page does not exist.');

@@ -128,15 +128,13 @@ class SuperDomain extends ActiveRecord
 
     public function getNewTickets()
     {
-        return $this->hasMany(SuperTicket::className(), ['team_id' => 'id'])
-            ->via('superTeams')
+        return $this->hasMany(SuperTicket::className(), ['domain_id' => 'id'])
             ->andWhere(['status_id' => 1]);
     }
 
     public function getResolvedTickets()
     {
-        return $this->hasMany(SuperTicket::className(), ['team_id' => 'id'])
-            ->via('superTeams')
+        return $this->hasMany(SuperTicket::className(), ['domain_id' => 'id'])
             ->andWhere(['status_id' => 2]);
     }
 

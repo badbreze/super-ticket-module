@@ -1,6 +1,8 @@
 <?php
 
 use super\ticket\helpers\RouteHelper;
+use yii\grid\GridView;
+use yii\helpers\Html;
 
 /**
  * @var $this \yii\web\View
@@ -13,90 +15,72 @@ use super\ticket\helpers\RouteHelper;
 <div class="row g-0">
     <?= $this->render('../parts/navigator'); ?>
     <div class="col-sm-10 p-4">
-        <div class="table-responsive">
-            <table class="table table-hover">
-                <thead>
-                <tr>
-                    <th>
-                        User
-                    </th>
-                    <th>
-                        Subject
-                    </th>
-                    <th>
-                        Assignee
-                    </th>
-                    <th>
-                        Priority
-                    </th>
-                    <th>
-                        Deadline
-                    </th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php foreach ($dataProvider->getModels() as $ticket) : ?>
-                    <tr class="linked-row"
-                        data-href="<?= RouteHelper::toTicket($ticket->id, $ticket->domain_id); ?>">
-                        <td class="py-2">
-                            <div class="d-flex flex-row">
-                                <div class="p-2 bd-highlight">
-                                    <img class="ticket-avatar rounded-circle"
-                                         src="https://www.gravatar.com/avatar/<?= md5(
-                                             $ticket->user->email
-                                         ); ?>?d=robohash"
-                                         alt="avatar"
-                                    />
-                                </div>
-
-                                <div class="p-2 bd-highlight">
-                                    <b><?= $ticket->user->name . ' ' . $ticket->user->surname; ?></b>
-                                    <div><i><?= $ticket->user->email; ?></i></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <a href="#">
-                                <?= $ticket->subject; ?>
-                            </a>
-                        </td>
-                        <td class="py-2">
-                            <div class="d-flex flex-row">
-                                <div class="p-2 bd-highlight">
-                                    <img class="ticket-avatar rounded-circle"
-                                         src="https://www.gravatar.com/avatar/<?= md5(
-                                             $ticket->agent->email
-                                         ); ?>?d=robohash" alt="avatar"/>
-                                </div>
-
-                                <div class="p-2 bd-highlight">
-                                    <b><?= $ticket->agent->name . ' ' . $ticket->agent->surname; ?></b>
-                                    <div><i><?= $ticket->agent->email; ?></i></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <?php if ($ticket->priority) : ?>
-                                <span class="badge badge-warning">
-                                    <?= $ticket->priority->name; ?>
-                                </span>
-                            <?php else: ?>
-                                <span class="badge badge-secondary">
-                                    None
-                                </span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <?= $ticket->due_date; ?>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-                </tbody>
-            </table>
-        </div>
-
-        <?= \yii\bootstrap4\LinkPager::widget([
-                                                  'pagination' => $dataProvider->getPagination(),
-                                              ]); ?>
+        <?= GridView::widget([
+            'dataProvider' => $dataProvider,
+            'pager' => [
+                'class' => yii\widgets\LinkPager::className(),
+                'firstPageLabel' => Yii::t('app', 'First'),
+                'lastPageLabel' => Yii::t('app', 'Last'),
+            ],
+            'tableOptions' => ['class' => 'table table-hover table-hover'],
+            'headerRowOptions' => ['class' => 'x'],
+            'columns' => [
+                [
+                    'class' => 'yii\grid\CheckboxColumn',
+                    //'template' => $actionColumnTemplateString,
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'user',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return Yii::$app->view->render('parts/grid_user', ['model' => $model]);
+                    },
+                    'label' => Yii::t('super', 'Author'),
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'subject',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return Html::a($model->subject, RouteHelper::toTicket($model->id)); // your url here
+                    },
+                    'label' => Yii::t('super', 'Subject'),
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'agent',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return Yii::$app->view->render('parts/grid_user', ['model' => $model]);
+                    },
+                    'label' => Yii::t('super', 'Assignee'),
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'priority.name',
+                    'format' => 'text',
+                    'label' => Yii::t('super', 'Priority'),
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'due_date',
+                    'format' => 'text',
+                    'label' => Yii::t('super', 'Deadline'),
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'created_at',
+                    'format' => 'text',
+                    'label' => Yii::t('super', 'Creation'),
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'lastEvent.created_at',
+                    'format' => 'text',
+                    'label' => Yii::t('super', 'Last Update'),
+                ],
+            ]
+        ]); ?>
     </div>
 </div>

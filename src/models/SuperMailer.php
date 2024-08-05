@@ -19,6 +19,7 @@ use Yii;
  * @property string|null $from
  * @property string|null $metadata
  * @property int|null $domain_id
+ * @property int $enabled
  * @property string|null $mail_template
  *
  * @property string|null $created_at Creato il
@@ -52,11 +53,11 @@ class SuperMailer extends ActiveRecord
     {
         return [
             [['domain_id'], 'required'],
-            [['domain_id', 'port', 'skip_ssl_validation', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
+            [['enabled', 'domain_id', 'port', 'skip_ssl_validation', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['username', 'password', 'host', 'encryption', 'from', 'metadata'], 'string', 'max' => 255],
             [['mail_template'], 'string'],
-            [['mail_template'], 'default', 'value'=> '{{content}}'],
+            [['mail_template'], 'default', 'value'=> '{{event.superUser.email}} {{content}}'],
             [['domain_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperDomain::className(), 'targetAttribute' => ['domain_id' => 'id']],
         ];
     }
@@ -77,6 +78,7 @@ class SuperMailer extends ActiveRecord
             'from' => Yii::t('super', 'From Address'),
             'data' => Yii::t('super', 'Data'),
             'domain_id' => Yii::t('super', 'Domain ID'),
+            'enabled' => Yii::t('super', 'Enabled'),
             'created_at' => Yii::t('super', 'Created At'),
             'updated_at' => Yii::t('super', 'Updated At'),
             'deleted_at' => Yii::t('super', 'Deleted At'),

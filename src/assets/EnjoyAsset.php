@@ -18,6 +18,7 @@ class EnjoyAsset extends \yii\web\AssetBundle {
         'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css',
         'css/style.css',
         'css/menu.css',
+        'css/fileicon.css',
         //'css/styles.css',
     ];
 

@@ -2,10 +2,13 @@
 
 namespace super\ticket\models;
 
+use elitedivision\amos\attachments\behaviors\FileBehavior;
+use elitedivision\amos\attachments\models\File;
 use super\ticket\db\ActiveRecord;
 use Yii;
 use yii\base\Exception;
 use super\ticket\mail\Mailer;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "{{%super_ticket_event}}".
@@ -26,6 +29,7 @@ use super\ticket\mail\Mailer;
  *
  * @property SuperTicket $ticket
  * @property SuperUser $superUser
+ * @property File[] $attachments
  */
 class SuperTicketEvent extends ActiveRecord
 {
@@ -40,6 +44,15 @@ class SuperTicketEvent extends ActiveRecord
     public static function tableName()
     {
         return '{{%super_ticket_event}}';
+    }
+
+    public function behaviors()
+    {
+        return ArrayHelper::merge(parent::behaviors(), [
+            'fileBehavior' => [
+                'class' => FileBehavior::className()
+            ]
+        ]);
     }
 
     /**
@@ -67,6 +80,7 @@ class SuperTicketEvent extends ActiveRecord
                 'targetClass' => SuperUser::className(),
                 'targetAttribute' => ['super_user_id' => 'id']
             ],
+            [['attachments'], 'file', 'maxFiles' => 0],
         ];
     }
 
@@ -139,7 +153,15 @@ class SuperTicketEvent extends ActiveRecord
         if ($event->save()) {
             SuperTicketFollower::follow($ticket_id, $super_user_id);
 
-            if(in_array($type, [self::TYPE_COMMENT, self::TYPE_STATUS_CHANGE])) {
+            //TODO questa cosa della riapertura va riorganizzata in modo da avere codice più pulito
+            if($event->type == self::TYPE_COMMENT) {
+                if ($event->ticket->status->identifier == SuperTicketStatus::STATUS_RESOLVED) {
+                    //TODO va resettata la SLA come richiesto da marco
+                    $event->ticket->changeStatus(SuperTicketStatus::STATUS_OPEN);
+                }
+            }
+
+            if(in_array($type, [self::TYPE_COMMENT/*, self::TYPE_STATUS_CHANGE*/])) {
                 $event->sendNotification();
             }
 
@@ -153,7 +175,7 @@ class SuperTicketEvent extends ActiveRecord
     {
         $domainMailer = $this->ticket->domain->mailer;
 
-        if($domainMailer && $domainMailer->host) {
+        if($domainMailer && $domainMailer->enabled) {
             $mailer = new Mailer([
                 'useFileTransport' => false,
                 'transport' => [
@@ -173,11 +195,12 @@ class SuperTicketEvent extends ActiveRecord
         }
 
         //Override Layout for template usage
-        $mailer->htmlLayout = "/mail/layouts/html";
+        $mailer->htmlLayout = "@vendor/badbreze/super-ticket-system/src/views/mail/layouts/html";
 
-        foreach ($this->ticket->followers as $follower) {
+        $followers = $this->ticket->getFollowers($this->super_user_id);
 
-            $mailer->compose("/mail/{$this->type}", [
+        foreach ($followers->all() as $follower) {
+            $mailer->compose("@vendor/badbreze/super-ticket-system/src/views/mail/{$this->type}", [
                 'event' => $this
             ])
                 ->setFrom($domainMailer->from ?: 'no-reply@super.ticket')
@@ -199,5 +222,18 @@ class SuperTicketEvent extends ActiveRecord
         ]);
 
         return $subject;
+    }
+
+    public function getPrevious($type = 'comment') {
+        $query = self::find()
+            ->andWhere(['ticket_id' => $this->ticket_id])
+            ->andWhere(['<','id', $this->id])
+            ->orderBy(['id' => SORT_DESC]);
+
+        if($type) {
+            $query->andWhere(['type' => $type]);
+        }
+
+        return $query->one();
     }
 }

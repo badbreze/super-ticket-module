@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\bootstrap4\ActiveForm;
 use yii\bootstrap4\Tabs;
 use dosamigos\tinymce\TinyMce;
+use super\ticket\models\SuperMailer;
 
 /**
  * @var yii\web\View $this
@@ -67,7 +68,7 @@ use dosamigos\tinymce\TinyMce;
                     'statusbar' => false,
                     //'toolbar' => 'undo redo | formatselect | bold italic',
                 ]
-            ])->label(false); ?>
+            ]); ?>
 
         </p>
         <?php $this->endBlock(); ?>
@@ -75,6 +76,9 @@ use dosamigos\tinymce\TinyMce;
         <?php $this->beginBlock('mailer'); ?>
 
         <p>
+            <!-- attribute enabled -->
+            <?= $form->field($mailer, 'enabled')->checkbox() ?>
+
             <!-- attribute username -->
             <?= $form->field($mailer, 'username')->textInput(['maxlength' => true]) ?>
 
@@ -87,11 +91,21 @@ use dosamigos\tinymce\TinyMce;
             <!-- attribute port -->
             <?= $form->field($mailer, 'port')->textInput(['maxlength' => true]) ?>
 
-            <!-- attribute type -->
-            <?= $form->field($mailer, 'encryption')->textInput(['maxlength' => true]) ?>
+            <!-- attribute encryption -->
+            <?=
+            $form->field($mailer, 'encryption')->dropDownList(
+                [
+                    SuperMailer::ENCRYPTION_TLS => 'TLS',
+                    SuperMailer::ENCRYPTION_SSL => 'SSL',
+                    SuperMailer::ENCRYPTION_NONE => 'None',
+                ],
+                [
+                    'prompt' => Yii::t('app', 'Select'),
+                ]
+            ); ?>
 
             <!-- attribute skip_ssl_validation -->
-            <?= $form->field($mailer, 'skip_ssl_validation')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($mailer, 'skip_ssl_validation')->checkbox() ?>
 
             <!-- attribute address -->
             <?= $form->field($mailer, 'from')->textInput(['maxlength' => true]) ?>

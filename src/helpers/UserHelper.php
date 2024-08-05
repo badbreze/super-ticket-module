@@ -2,14 +2,26 @@
 
 namespace super\ticket\helpers;
 
-use super\ticket\models\SuperTicket;
-use super\ticket\models\SuperTicketStatus;
 use super\ticket\models\SuperUser;
 use yii\db\Exception;
 
 class UserHelper
 {
-    public static function verifyUserData($domain_id, $name, $surname = null, $email = null, $phone = null) {
+    /**
+     * Check if the current logged use is available on super ticket system
+     * @return mixed|null
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function isCurrentUserAvailable() {
+        $query = SuperUser::find()
+            ->andWhere(['user_id' => \Yii::$app->user->id]);
+
+        $user = $query->one();
+
+        return $user->id;
+    }
+
+    public static function parseAndGetUser($domain_id, $name, $surname = null, $email = null, $phone = null) {
         $query = SuperUser::find()
             ->andWhere(['domain_id' => $domain_id]);
 

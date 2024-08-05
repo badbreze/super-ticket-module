@@ -14,13 +14,20 @@ class StringHelper
     public static function parse($subject, $params = []) {
         return preg_replace_callback(
             '/\{\{\s*([\w\.\/-]+)\s*\}\}/',
-            function (array $matches) use ($params) {
+            function (array $matches) use ($params, $subject) {
                 $match = $matches[1];
                 $elements = explode('.', $match);
 
                 //Questa cosa fa un giro un po da sistemare, è un po astruso
                 if(count($elements) > 1) {
                     $rootName = $elements[0];
+
+                    if(!isset($$rootName)) {
+                        \Yii::error("Parser error for variable {$rootName} in '{$subject}'",'super');
+
+                        return null;
+                    }
+
                     $unroll = $$rootName;
 
                     //Drop Root
