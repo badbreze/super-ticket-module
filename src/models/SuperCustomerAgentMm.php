@@ -48,9 +48,9 @@ class SuperCustomerAgentMm extends ActiveRecord
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperCustomer::className(), 'targetAttribute' => ['customer_id' => 'id']],
             [['agent_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperAgent::className(), 'targetAttribute' => ['agent_id' => 'id']],
             [['customer_role_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperCustomerRole::className(), 'targetAttribute' => ['customer_role_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
-            [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['deleted_by' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['updated_by' => 'id']],
+            [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['deleted_by' => 'id']],
         ];
     }
 
@@ -90,7 +90,7 @@ class SuperCustomerAgentMm extends ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'created_by']);
     }
 
     /**
@@ -120,7 +120,7 @@ class SuperCustomerAgentMm extends ActiveRecord
      */
     public function getDeletedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'deleted_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'deleted_by']);
     }
 
     /**
@@ -130,6 +130,6 @@ class SuperCustomerAgentMm extends ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'updated_by']);
     }
 }

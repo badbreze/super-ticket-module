@@ -31,10 +31,10 @@ use yii\helpers\Html;
                 ],
                 [
                     'class' => \yii\grid\DataColumn::class, // this line is optional
-                    'attribute' => 'user',
+                    'attribute' => 'superUser',
                     'format' => 'raw',
                     'value' => function ($model) {
-                        return Yii::$app->view->render('parts/grid_user', ['model' => $model]);
+                        return Yii::$app->view->render('parts/grid_user', ['model' => $model->superUser]);
                     },
                     'label' => Yii::t('super', 'Author'),
                 ],
@@ -52,7 +52,7 @@ use yii\helpers\Html;
                     'attribute' => 'agent',
                     'format' => 'raw',
                     'value' => function ($model) {
-                        return Yii::$app->view->render('parts/grid_user', ['model' => $model]);
+                        return Yii::$app->view->render('parts/grid_user', ['model' => $model->agent->superUser]);
                     },
                     'label' => Yii::t('super', 'Assignee'),
                 ],
@@ -79,6 +79,15 @@ use yii\helpers\Html;
                     'attribute' => 'lastEvent.created_at',
                     'format' => 'text',
                     'label' => Yii::t('super', 'Last Update'),
+                ],
+                [
+                    'class' => \yii\grid\DataColumn::class, // this line is optional
+                    'attribute' => 'comments',
+                    'format' => 'raw',
+                    'value' => function ($model) {
+                        return $model->getComments()->count(); // your url here
+                    },
+                    'label' => Yii::t('super', 'Comments'),
                 ],
             ]
         ]); ?>

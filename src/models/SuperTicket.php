@@ -40,8 +40,9 @@ use yii\helpers\ArrayHelper;
  * @property SuperTicketPriority $priority
  * @property SuperMail $mail
  * @property SuperTicketStatus $status
- * @property SuperUser $user
+ * @property SuperUser $superUser
  * @property SuperTicketEvent[] $events
+ * @property SuperTicketEvent[] $comments
  * @property SuperTicketEvent $lastEvent
  * @property SuperTicket[] $relatedTickets
  * @property SuperTicket[] $dependantTickets
@@ -80,13 +81,13 @@ class SuperTicket extends ActiveRecord
     public function rules()
     {
         return [
-            [['subject', 'content', 'status_id', 'user_id', 'source_id', 'team_id', 'domain_id'], 'required'],
+            [['subject', 'content', 'status_id', 'super_user_id', 'source_id', 'team_id', 'domain_id'], 'required'],
             [['source_type', 'source_enum', 'content', 'metadata'], 'string'],
             [
                 [
                     'status_id',
                     'priority_id',
-                    'user_id',
+                    'super_user_id',
                     'source_id',
                     'team_id',
                     'domain_id',
@@ -115,7 +116,7 @@ class SuperTicket extends ActiveRecord
             'content' => Yii::t('super', 'Content'),
             'status_id' => Yii::t('super', 'Status ID'),
             'priority_id' => Yii::t('super', 'Priority ID'),
-            'user_id' => Yii::t('super', 'User ID'),
+            'super_user_id' => Yii::t('super', 'User ID'),
             'source_type' => Yii::t('super', 'Source Type'),
             'source_id' => Yii::t('super', 'Source ID'),
             'source_enum' => Yii::t('super', 'Source ENUM'),
@@ -210,13 +211,13 @@ class SuperTicket extends ActiveRecord
     }
 
     /**
-     * Gets query for [[User]].
+     * Gets query for [[SuperUser]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getSuperUser()
     {
-        return $this->hasOne(SuperUser::className(), ['id' => 'user_id']);
+        return $this->hasOne(SuperUser::className(), ['id' => 'super_user_id']);
     }
 
     /**
@@ -227,6 +228,17 @@ class SuperTicket extends ActiveRecord
     public function getEvents()
     {
         return $this->hasMany(SuperTicketEvent::className(), ['ticket_id' => 'id']);
+    }
+
+    /**
+     * Gets query for [[SuperTicketEvents]] typed ad Comments.
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getComments()
+    {
+        return $this->hasMany(SuperTicketEvent::className(), ['ticket_id' => 'id'])
+            ->andOnCondition(['super_ticket_event.type' => SuperTicketEvent::TYPE_COMMENT]);
     }
 
     public function getLastEvent() {

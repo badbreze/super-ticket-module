@@ -119,7 +119,7 @@ class EmailController extends Controller
             'source_type' => SuperTicket::SOURCE_MAIL,
             'team_id' => $source->team_id,
             'domain_id' => $source->domain_id,
-            'user_id' => $user->id,
+            'super_user_id' => $user->id,
             'metadata' => serialize($mail)
         ]);
 

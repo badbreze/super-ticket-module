@@ -48,9 +48,9 @@ class SuperCustomerRole extends ActiveRecord
             [['name'], 'string', 'max' => 64],
             [['description'], 'string', 'max' => 256],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperCustomer::className(), 'targetAttribute' => ['customer_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
-            [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['deleted_by' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['updated_by' => 'id']],
+            [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['deleted_by' => 'id']],
         ];
     }
 
@@ -80,7 +80,7 @@ class SuperCustomerRole extends ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'created_by']);
     }
 
     /**
@@ -100,7 +100,7 @@ class SuperCustomerRole extends ActiveRecord
      */
     public function getDeletedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'deleted_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'deleted_by']);
     }
 
     /**
@@ -130,6 +130,6 @@ class SuperCustomerRole extends ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'updated_by']);
     }
 }

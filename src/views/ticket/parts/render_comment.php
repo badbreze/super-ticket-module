@@ -8,7 +8,7 @@ use super\ticket\helpers\HtmlHelper;
 ?>
 <div class="ticket-comment-single">
     <div class="ticket-comment-info">
-        <?php if($event->creator) : ?>
+        <?php if($event->creator && $event->creator->profile) : ?>
         <div class="ticket-comment-avatar">
             <img class="avatar" src="<?= $event->creator->profile->getAvatar()->getUrl(
                 false,
@@ -16,6 +16,12 @@ use super\ticket\helpers\HtmlHelper;
                 true
             ); ?>" />
         </div>
+        <?php else: ?>
+            <div class="ticket-comment-avatar">
+                <img class="avatar" src="https://www.gravatar.com/avatar/<?= md5(
+                    $event->superUser->email
+                ); ?>?d=mp" />
+            </div>
         <?php endif; ?>
         <div class="d-inline-block">
             <?= Yii::t('super', 'In'); ?>

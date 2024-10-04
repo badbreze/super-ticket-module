@@ -23,7 +23,7 @@ class SoftDeleteBehavior extends Behavior
     public function events()
     {
         return ArrayHelper::merge(parent::events(), [
-            ActiveRecord::EVENT_BEFORE_DELETE => 'overlapDeteleEvent'
+            ActiveRecord::EVENT_BEFORE_DELETE => 'overlapDeleteEvent'
         ]);
     }
 
@@ -32,7 +32,7 @@ class SoftDeleteBehavior extends Behavior
      *
      * @param ModelEvent $event
      */
-    public function overlapDeteleEvent($event)
+    public function overlapDeleteEvent($event)
     {
         if(!$this->owner->hasSoftDelete()) {
             return $event;

@@ -7,19 +7,19 @@ use yii\web\View;
 
 /**
  * @var $this View
- * @var $model SuperTicket
+ * @var $model \super\ticket\models\SuperUser
  */
 ?>
-<div class="p-2 bd-highlight">
+<!--div class="p-2 bd-highlight">
     <img class="ticket-avatar rounded-circle"
          src="https://www.gravatar.com/avatar/<?= md5(
-             $model->user->email
+             $model->email
          ); ?>?d=mp"
          alt="avatar"
     />
-</div>
+</div-->
 
 <div class="p-2 bd-highlight">
-    <b><?= $model->user->name . ' ' . $model->user->surname; ?></b>
-    <div><i><?= $model->user->email; ?></i></div>
+    <b><?= $model->name . ' ' . $model->surname; ?></b>
+    <div><i><?= $model->email; ?></i></div>
 </div>

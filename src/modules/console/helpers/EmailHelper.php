@@ -146,7 +146,7 @@ class EmailHelper
         }
 
         if($sender != false) {
-            $q->joinWith('user');
+            $q->joinWith('superUser');
             $q->andWhere(['super_user.email' => $sender]);
         }
 

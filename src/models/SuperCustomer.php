@@ -77,7 +77,7 @@ class SuperCustomer extends ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'created_by']);
     }
 
     /**
@@ -87,7 +87,7 @@ class SuperCustomer extends ActiveRecord
      */
     public function getDeletedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'deleted_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'deleted_by']);
     }
 
     /**
@@ -147,6 +147,6 @@ class SuperCustomer extends ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'updated_by']);
     }
 }

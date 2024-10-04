@@ -44,7 +44,7 @@ $statuses = StatusHelper::getAvailableStatuses();
 
         <p class="card-description mt-3">
             <?= Yii::t('super', 'Opened by <code>{name}</code> in {date}', [
-                    'name' => $ticket->user->fullName,
+                    'name' => $ticket->superUser->fullName,
                     'date' => $ticket->created_at
             ]); ?>
         </p>

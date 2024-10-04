@@ -34,8 +34,8 @@ class SuperTicket extends \super\ticket\models\SuperTicket
                                                'surname',
                                                'email',
                                                'profile' => function (SuperAgent $model) {
-                                                   return $model->user ?
-                                                       $model->user->toArray([
+                                                   return $model->superUser ?
+                                                       $model->superUser->toArray([
                                                                                  'id',
                                                                                  'name',
                                                                                  'surname',
@@ -74,8 +74,8 @@ class SuperTicket extends \super\ticket\models\SuperTicket
                     null;
             },
             'creator' => function (parent $model) {
-                return $model->user ?
-                    $model->user->toArray([
+                return $model->superUser ?
+                    $model->superUser->toArray([
                                               'id',
                                               'name',
                                               'surname',

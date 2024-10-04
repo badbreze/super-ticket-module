@@ -29,7 +29,7 @@ use Yii;
  * @property SuperMail[] $superMails
  * @property SuperTicket[] $superTickets
  * @property User $updatedBy
- * @property User $user
+ * @property SuperUser $superUser
  * @property string $fullName
  */
 class SuperAgent extends ActiveRecord
@@ -55,9 +55,9 @@ class SuperAgent extends ActiveRecord
             [['url', 'email'], 'string', 'max' => 128],
             [['address'], 'string', 'max' => 255],
             [['super_user_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperUser::className(), 'targetAttribute' => ['super_user_id' => 'id']],
-            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['created_by' => 'id']],
-            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['updated_by' => 'id']],
-            [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['deleted_by' => 'id']],
+            [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['created_by' => 'id']],
+            [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['updated_by' => 'id']],
+            [['deleted_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['deleted_by' => 'id']],
         ];
     }
 
@@ -90,7 +90,7 @@ class SuperAgent extends ActiveRecord
      */
     public function getCreatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'created_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'created_by']);
     }
 
     /**
@@ -100,7 +100,7 @@ class SuperAgent extends ActiveRecord
      */
     public function getDeletedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'deleted_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'deleted_by']);
     }
 
     /**
@@ -150,15 +150,15 @@ class SuperAgent extends ActiveRecord
      */
     public function getUpdatedBy()
     {
-        return $this->hasOne(User::className(), ['id' => 'updated_by']);
+        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'updated_by']);
     }
 
     /**
-     * Gets query for [[User]].
+     * Gets query for [[SuperUser]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getUser()
+    public function getSuperUser()
     {
         return $this->hasOne(SuperUser::className(), ['id' => 'super_user_id']);
     }
