@@ -12,7 +12,7 @@ use Yii;
  * @property string $name Name
  * @property integer $grace_period Grace Period
  * @property int|null $customer_id
- * @property int $scheduling_id
+ * @property int $schedule_id
  * @property string|null $created_at Creato il
  * @property string|null $updated_at Aggiornato il
  * @property string|null $deleted_at Cancellato il
@@ -21,7 +21,7 @@ use Yii;
  * @property int|null $deleted_by Cancellato da
  *
  * @property SuperCustomer $customer
- * @property SuperTicketSlaSchedule $scheduling
+ * @property SuperTicketSlaSchedule $schedule
  */
 class SuperTicketSla extends ActiveRecord
 {
@@ -43,8 +43,8 @@ class SuperTicketSla extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'grace_period', 'scheduling_id'], 'required'],
-            [['grace_period', 'scheduling_id', 'customer_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
+            [['name', 'grace_period', 'schedule_id'], 'required'],
+            [['grace_period', 'schedule_id', 'customer_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['name'], 'string', 'max' => 64],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperCustomer::className(), 'targetAttribute' => ['customer_id' => 'id']],
@@ -61,7 +61,7 @@ class SuperTicketSla extends ActiveRecord
             'name' => Yii::t('super', 'Name'),
             'customer_id' => Yii::t('super', 'Customer'),
             'grace_period' => Yii::t('super', 'Grace Period'),
-            'scheduling_id' => Yii::t('super', 'Scheduling'),
+            'schedule_id' => Yii::t('super', 'Schedule'),
             'created_at' => Yii::t('super', 'Created At'),
             'updated_at' => Yii::t('super', 'Updated At'),
             'deleted_at' => Yii::t('super', 'Deleted At'),
@@ -86,8 +86,8 @@ class SuperTicketSla extends ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getScheduling()
+    public function getSchedule()
     {
-        return $this->hasOne(SuperTicketSlaSchedule::className(), ['id' => 'scheduling_id']);
+        return $this->hasOne(SuperTicketSlaSchedule::className(), ['id' => 'schedule_id']);
     }
 }

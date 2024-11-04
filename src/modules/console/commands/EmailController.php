@@ -123,6 +123,9 @@ class EmailController extends Controller
             'metadata' => serialize($mail)
         ]);
 
+        //Calculate Due Date
+        $newTicket->due_date = $newTicket->calculateDueDate();
+
         if ($mail->date) {
             $newTicket->created_at = $mail->date;
         }

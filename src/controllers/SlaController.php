@@ -5,6 +5,8 @@ namespace super\ticket\controllers;
 use super\ticket\base\Controller;
 use super\ticket\models\SuperTicketSla;
 use dmstr\bootstrap\Tabs;
+use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 
 /**
@@ -17,6 +19,25 @@ class SlaController extends Controller
      * CSRF validation is enabled only when both this property and [[Request::enableCsrfValidation]] are true.
      */
     public $enableCsrfValidation = false;
+
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'roles' => ['SUPER_ADMIN'],
+                        ],
+                    ],
+                ],
+            ];
+    }
 
 
     /**

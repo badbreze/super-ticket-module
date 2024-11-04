@@ -9,7 +9,8 @@ use Yii;
  * @property int $id
  * @property string $name Name
  * @property int|null $schedule_id
- * @property string|null $day
+ * @property int $day
+ * @property int $month
  * @property string|null $created_at Creato il
  * @property string|null $updated_at Aggiornato il
  * @property string|null $deleted_at Cancellato il
@@ -33,11 +34,10 @@ class SuperTicketSlaScheduleHolidays extends ActiveRecord
     public function rules()
     {
         return [
-            [['name', 'schedule_id', 'day'], 'required'],
-            [['schedule_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
+            [['name', 'schedule_id', 'day', 'month'], 'required'],
+            [['schedule_id', 'created_by', 'updated_by', 'deleted_by', 'day', 'month'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['name'], 'string', 'max' => 64],
-            [['day'], 'date'],
             [['schedule_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperTicketSlaSchedule::className(), 'targetAttribute' => ['schedule_id' => 'id']],
         ];
     }
@@ -51,6 +51,7 @@ class SuperTicketSlaScheduleHolidays extends ActiveRecord
             'id' => Yii::t('super', 'ID'),
             'name' => Yii::t('super', 'Name'),
             'day' => Yii::t('super', 'Day'),
+            'month' => Yii::t('super', 'Month'),
             'schedule_id' => Yii::t('super', 'Customer ID'),
             'created_at' => Yii::t('super', 'Created At'),
             'updated_at' => Yii::t('super', 'Updated At'),
@@ -70,4 +71,5 @@ class SuperTicketSlaScheduleHolidays extends ActiveRecord
     {
         return $this->hasOne(SuperTicketSlaSchedule::className(), ['id' => 'schedule_id']);
     }
+
 }

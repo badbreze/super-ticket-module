@@ -24,6 +24,15 @@ use yii\helpers\Html;
             ],
             'tableOptions' => ['class' => 'table table-hover table-hover'],
             'headerRowOptions' => ['class' => 'x'],
+            'rowOptions' => function($model, $key, $index, $grid) {
+            /**@var $model \super\ticket\models\SuperTicket **/
+                if(
+                        $model->isDueDateElapsed &&
+                    $model->status->identifier == \super\ticket\models\SuperTicketStatus::STATUS_OPEN
+                ) {
+                    return ['class' => 'bg-info'];
+                }
+            },
             'columns' => [
                 [
                     'class' => 'yii\grid\CheckboxColumn',

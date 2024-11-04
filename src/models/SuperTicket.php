@@ -5,6 +5,7 @@ namespace super\ticket\models;
 use elitedivision\amos\attachments\behaviors\FileBehavior;
 use elitedivision\amos\attachments\models\File;
 use super\ticket\db\ActiveRecord;
+use super\ticket\helpers\DateTimeHelper;
 use Yii;
 use yii\base\Event;
 use yii\db\ActiveQuery;
@@ -53,6 +54,7 @@ use yii\helpers\ArrayHelper;
  * @property SuperAgent[] $availableAssignees
  * @property SuperTicketFollower[] $followers
  * @property File[] $attachments
+ * @property bool $isDueDateElapsed
  */
 class SuperTicket extends ActiveRecord
 {
@@ -241,7 +243,8 @@ class SuperTicket extends ActiveRecord
             ->andOnCondition(['super_ticket_event.type' => SuperTicketEvent::TYPE_COMMENT]);
     }
 
-    public function getLastEvent() {
+    public function getLastEvent()
+    {
         return self::getEvents()->orderBy(['created_at' => SORT_DESC])->one();
     }
 
@@ -336,9 +339,15 @@ class SuperTicket extends ActiveRecord
         return $this->save(false);
     }
 
+    /**
+     * @param $priority_id
+     * @return bool
+     */
     public function updatePriority($priority_id)
     {
         $this->priority_id = $priority_id;
+
+        $this->due_date = $this->calculateDueDate();
 
         $this->addEvent(
             SuperTicketEvent::TYPE_PRIORITY,
@@ -348,6 +357,103 @@ class SuperTicket extends ActiveRecord
         return $this->save(false);
     }
 
+    /**
+     * Calculates the due date based on SLA, working hours and holidays
+     * @return string|null Returns formatted due date or null if no SLA is set
+     */
+    public function calculateDueDate()
+    {
+        // Return null if no SLA or priority is set
+        if (!$this->priority_id) {
+            return null;
+        }
+
+        //try {
+        // Get current datetime as starting point
+        $startDate = new \DateTime();
+
+        // If ticket has created_at, use it as start date
+        if ($this->created_at) {
+            $startDate = new \DateTime($this->created_at);
+
+            //TODO logica da vincolare a un'opzione, magari non tutti la vogliono così
+            if($startDate->format('i') > 0) {
+                $startDate->modify('+1 hour');
+                $startDate->setTime($startDate->format('H'),0,0);
+            }
+        }
+
+        if ($this->priority->sla === null) {
+            return null;
+        }
+
+        $dueDate = $this->addWorkingHours($startDate);
+
+        // Format the date for database
+        return $dueDate->format('Y-m-d H:i:s');
+
+        /*} catch (\Exception $e) {
+            Yii::error('Error calculating due date: ' . $e->getMessage());
+            return null;
+        }*/
+    }
+
+    /**
+     * Add working hours to a date while considering holidays and working hours
+     * @param \DateTime $startDate
+     * @param int $hoursToAdd
+     * @return \DateTime
+     */
+    private function addWorkingHours(\DateTime $startDate)
+    {
+        $dueDate = clone $startDate;
+        $remainingHours = $this->priority->sla->grace_period;
+
+        while ($remainingHours > 0) {
+            $dueDate = $this->priority->sla->schedule->getNextWorkingDayByDate($dueDate);
+
+            if(!$dueDate) {
+                return null;
+            }
+
+            $workDay = $this->priority->sla->schedule->getEntryByDate($dueDate)->one();
+            $diffDueToWork = DateTimeHelper::compareTimeOnly($dueDate, $workDay->getEndHour());
+
+            if($diffDueToWork == '+' ) {
+                $dueDate->modify('+1 day');
+                continue;
+            }
+
+            if($workDay->getStartHour()->format('H') > $dueDate->format('H')) {
+                $dueDate->setTime(
+                    $workDay->getStartHour()->format('H'),
+                    $workDay->getStartHour()->format('i')
+                );
+            }
+
+            // Calculate hours until end of current working day
+            $hoursUntilEnd = (int)$workDay->getEndHour()->format('H') - (int)$dueDate->format('H');
+
+            if ($remainingHours <= $hoursUntilEnd) {
+                // Add remaining hours
+                $dueDate->modify("+{$remainingHours} hours");
+                $remainingHours = 0;
+            } else {
+                // Add hours until end of day and continue with next day
+                $dueDate->modify("+{$hoursUntilEnd} hours");
+                $remainingHours -= $hoursUntilEnd;
+                $dueDate->modify('+1 day');
+                $dueDate->setTime(9, 0); // Reset to start of working day
+            }
+        }
+
+        return $dueDate;
+    }
+
+    /**
+     * @param $status_id
+     * @return bool
+     */
     public function updateStatus($status_id)
     {
         $this->status_id = $status_id;
@@ -360,14 +466,27 @@ class SuperTicket extends ActiveRecord
         return $this->save(false);
     }
 
-    public function changeStatus($identifier) {
+    public function changeStatus($identifier)
+    {
         $status = SuperTicketStatus::findOne(['identifier' => $identifier]);
 
-        if($status && $status->id) {
+        if ($status && $status->id) {
             $this->status_id = $status->id;
             return $this->save(false);
         }
 
         throw new \Exception("The Status {$identifier} doe not exists");
+    }
+
+    public function getIsDueDateElapsed()
+    {
+        if ($this->due_date) {
+            $dueDate = new \DateTime($this->due_date);
+            $now = new \DateTime();
+
+            return $dueDate < $now;
+        }
+
+        return false;
     }
 }

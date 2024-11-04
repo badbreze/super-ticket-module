@@ -73,7 +73,7 @@ $statuses = StatusHelper::getAvailableStatuses();
                     <?php foreach ($ticket->availablePriorities as $priority): ?>
                         <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'priority', $priority->id); ?>" data-status_id="<?= $priority->id; ?>" class="dropdown-item status-changer-element">
                             <i class="mdi mdi-file-pdf text-primary"></i>
-                            <?= $priority->name; ?>
+                            <?= $priority->name; ?> (<?= $priority->sla->grace_period; ?>)
                         </a> <!-- dropdown-item -->
                     <?php endforeach; ?>
                 </div> <!-- dropdown-menu -->

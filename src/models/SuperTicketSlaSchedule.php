@@ -2,6 +2,7 @@
 
 namespace super\ticket\models;
 
+use luya\admin\ngrest\plugins\Datetime;
 use super\ticket\db\ActiveRecord;
 use Yii;
 
@@ -15,6 +16,8 @@ use Yii;
  * @property int|null $created_by Creato da
  * @property int|null $updated_by Aggiornato da
  * @property int|null $deleted_by Cancellato da
+ *
+ * @property SuperTicketSlaScheduleEntries $entries
  */
 class SuperTicketSlaSchedule extends ActiveRecord
 {
@@ -66,5 +69,51 @@ class SuperTicketSlaSchedule extends ActiveRecord
     public function getCustomer()
     {
         return $this->hasOne(SuperCustomer::className(), ['id' => 'customer_id']);
+    }
+
+    public function getEntries()
+    {
+        return $this->hasMany(SuperTicketSlaScheduleEntries::className(), ['schedule_id' => 'id']);
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return \yii\db\ActiveQuery|SuperTicketSlaScheduleEntries
+     */
+    public function getEntryByDate(\DateTime $date)
+    {
+        $dow = $date->format('N');
+
+        return $this->hasOne(SuperTicketSlaScheduleEntries::className(), ['schedule_id' => 'id'])
+            ->where(['day_of_week' => $dow]);
+    }
+
+    public function getHolidaysByDateTime(\DateTime $date) {
+        $day = $date->format('j');
+        $month = $date->format('n');
+
+        return SuperTicketSlaScheduleHolidays::find()
+            ->where(['month' => $month, 'day' => $day])
+            ->andWhere(['schedule_id' => $this->id]);
+    }
+
+    /**
+     * @param \DateTime $date
+     * @return \DateTime
+     */
+    public function getNextWorkingDayByDate(\DateTime $date) {
+        for ($i = 1; $i < 7; $i++) { // Avoid loops on misconfigured schedules
+            $entry = $this->getEntryByDate($date)->one();
+            $holidays = $this->getHolidaysByDateTime($date)->one();
+
+            if ($entry && !$holidays) {
+                return $date;
+            }
+
+            $date->modify('+1 day');
+            $date->setTime(0,0,0);
+        }
+
+        return null;
     }
 }

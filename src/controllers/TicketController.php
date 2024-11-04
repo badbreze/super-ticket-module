@@ -10,6 +10,9 @@ use super\ticket\models\SuperDomain;
 use super\ticket\models\SuperTicket;
 use super\ticket\models\SuperTicketEvent;
 use yii\data\ActiveDataProvider;
+use yii\filters\AccessControl;
+use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\helpers\Json;
 
@@ -18,6 +21,46 @@ use yii\helpers\Json;
  */
 class TicketController extends Controller
 {
+
+    /**
+     * @inheritdoc
+     */
+    public function behaviors()
+    {
+        return ArrayHelper::merge(
+            parent::behaviors(),
+            [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'actions' => [
+                                'disabled-platforms',
+                                'get-domains',
+                                'get-environments',
+                                'get-ecs-services',
+                                'cli',
+                                'projects',
+                                'scoreboard',
+                                'operate',
+                                'search',
+                                'test',
+                            ],
+                            'roles' => ['SUPER_USER'],
+                        ],
+                    ],
+                ],
+                'verbs' => [
+                    'class' => VerbFilter::className(),
+                    'actions' => [
+                        //'action_name' => ['post', 'get']
+                    ]
+                ]
+            ]
+        );
+    }
+
     /**
      * Renders the index view for the module
      * @return string
@@ -40,7 +83,7 @@ class TicketController extends Controller
         $tickets = SuperTicket::find()
             ->joinWith('team')
             ->joinWith('status')
-            //->orderBy(['super_ticket.created_at' => SORT_DESC])
+            //->orderBy(['super_ticket.due_date' => SORT_ASC])
             ->andWhere(['super_ticket.domain_id' => $domain_id]);
 
         if ($status_identifier) {
@@ -51,6 +94,7 @@ class TicketController extends Controller
             'query' => $tickets,
             'sort' => [
                 'defaultOrder' => [
+                    'due_date' => SORT_ASC,
                     'created_at' => SORT_DESC
                 ]
             ],

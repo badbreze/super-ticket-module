@@ -46,29 +46,32 @@ $currentStatus = StatusHelper::getCurrentStatus();
 
     <div class="form-inline my-3 my-lg-0 mx-auto ml-sm-auto mr-sm-0">
 
-        <div class="nav-item dropdown dropleft">
-            <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
-                <i class="fas fa-cogs"></i>
-            </a>
-            <div class="dropdown-menu shadow-sm border-0" style="text-align: left">
-                <a class="dropdown-item"
-                   href="/super/team">
-                    <i class="fas fa-users"></i> Teams
+        <?php if(Yii::$app->user->can('SUPER_ADMIN')) : ?>
+            <div class="nav-item dropdown dropleft">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <i class="fas fa-cogs"></i>
                 </a>
-                <a class="dropdown-item" href="/super/sla" tabindex="-1">
-                    <i class="fas fa-hourglass-half"></i> Sla
-                </a>
-                <a class="dropdown-item" href="/super/customer" tabindex="-1">
-                    <i class="fas fa-user-tie"></i> Customers
-                </a>
-                <a class="dropdown-item" href="/super/domain" tabindex="-1">
-                    <i class="fas fa-store"></i> Domains
-                </a>
-                <a class="dropdown-item" href="/super/mails" tabindex="-1">
-                    <i class="far fa-envelope"></i> Mails
-                </a>
+                <div class="dropdown-menu shadow-sm border-0" style="text-align: left">
+                    <a class="dropdown-item"
+                       href="/super/team">
+                        <i class="fas fa-users"></i> Teams
+                    </a>
+                    <a class="dropdown-item" href="/super/sla" tabindex="-1">
+                        <i class="fas fa-hourglass-half"></i> Sla
+                    </a>
+                    <a class="dropdown-item" href="/super/customer" tabindex="-1">
+                        <i class="fas fa-user-tie"></i> Customers
+                    </a>
+                    <a class="dropdown-item" href="/super/domain" tabindex="-1">
+                        <i class="fas fa-store"></i> Domains
+                    </a>
+                    <a class="dropdown-item" href="/super/mails" tabindex="-1">
+                        <i class="far fa-envelope"></i> Mails
+                    </a>
+                </div>
             </div>
-        </div>
+        <?php endif; ?>
+
         <div class="dropdown">
             <input class="form-control mr-sm-2 shadow-sm bg-black rounded border-0 dropdown-toggle" type="search"
                    placeholder="<?= Yii::t('super', 'Cerca Ticket'); ?>" id="globalSearch">
