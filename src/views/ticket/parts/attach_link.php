@@ -11,5 +11,5 @@ use super\ticket\helpers\HtmlHelper;
         <div class="file-icon" data-type="<?= $attachment->type; ?>"></div>
         <?= $attachment->name.'.'.$attachment->type; ?>
     </b>
-    <a href="<?= $attachment->getUrl(); ?>">Scarica</a>
+    <a href="<?= $attachment->getUrl(); ?>" target="_blank">Scarica</a>
 </div>

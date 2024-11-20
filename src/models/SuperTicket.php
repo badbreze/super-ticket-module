@@ -251,7 +251,7 @@ class SuperTicket extends ActiveRecord
     /**
      * Gets query for [[SuperTicketEvents]].
      *
-     * @param $exclusions integer user to exclude
+     * @param $exclusions integer|array users to exclude
      * @return \yii\db\ActiveQuery
      */
     public function getFollowers($exclusions = 0)

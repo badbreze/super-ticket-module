@@ -17,6 +17,7 @@ class TicketCommentForm extends Model
     public $body;
     public $user_id;
     public $isNewRecord = true;
+    public $recipients = [];
 
     public function behaviors()
     {
@@ -34,7 +35,7 @@ class TicketCommentForm extends Model
     {
         return [
             // name, email, subject and body are required
-            [['ticket_id', 'body'], 'required'],
+            [['ticket_id', 'body', 'recipients'], 'required'],
             [['ticket_id'], 'integer'],
             [['body'], 'string'],
             [['id'], 'safe'],
@@ -49,18 +50,23 @@ class TicketCommentForm extends Model
     {
         return [
             'verifyCode' => 'Verification Code',
+            'recipients' => 'Recipients',
+            'body' => 'Comment',
         ];
-
-        Yii::$app->db->createCommand()->execute();
     }
 
     public function save() {
         if($this->validate()) {
+            $metadata = [
+                'recipients' => $this->recipients,
+            ];
+
             return SuperTicketEvent::createTicketEvent(
                 $this->ticket_id,
                 SuperTicketEvent::TYPE_COMMENT,
                 $this->body,
-                $this->user_id
+                $this->user_id,
+                $metadata
             );
         }
 

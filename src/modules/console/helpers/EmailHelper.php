@@ -90,13 +90,38 @@ class EmailHelper
      * @return array
      */
     public static function getContactFromEmail(IncomingMail $email) {
+        $nameParts =  explode(' ', $email->fromName);
+        $name = reset($nameParts);
+        unset($nameParts[0]);
+
         $result = [
-            'name' => $email->fromName,
-            'surname' => null,
+            'name' => $name,
+            'surname' => trim(join(' ', $nameParts)),
             'email' => $email->fromAddress,
             'phone' => null,
             'host' => $email->fromHost,
         ];
+
+        return $result;
+    }
+
+    public static function getFollowersFromEmail(IncomingMail $email) {
+        $ccs = $email->cc;
+        $result = [];
+
+        foreach ($ccs as $mail => $fullName) {
+            $nameParts =  explode(' ', $fullName);
+            $name = reset($nameParts);
+            unset($nameParts[0]);
+
+            $result[] = [
+                'name' => $name,
+                'surname' => trim(join(' ', $nameParts)),
+                'email' => $mail,
+                'phone' => null,
+                'host' => $email->fromHost,
+            ];
+        }
 
         return $result;
     }
@@ -112,13 +137,11 @@ class EmailHelper
     }
 
     public static function getMailTicketReffered(\PhpImap\IncomingMail $mail) {
-        $subject = new MailSubject(['subject' => $mail->subject]);
-
-        return self::getSubjectTicketReffered($subject, $mail->fromAddress);
+        return self::getSubjectTicketReffered($mail);
     }
 
-    public static function getSubjectTicketReffered(MailSubject $subject, $sender = false, $ignoreClosed = true) {
-        $q = self::getTicketMatchesQuery($subject, $sender, $ignoreClosed);
+    public static function getSubjectTicketReffered(\PhpImap\IncomingMail $mail, $ignoreClosed = true) {
+        $q = self::getTicketMatchesQuery($mail, $ignoreClosed);
 
         //TODO need a decision on how to manage this situation
         /*if ($q->count() > 1)
@@ -127,7 +150,8 @@ class EmailHelper
         return $q;
     }
 
-    public static function getTicketMatchesQuery(MailSubject $subject, $sender = false, $ignoreClosed = true) {
+    public static function getTicketMatchesQuery(\PhpImap\IncomingMail $mail, $ignoreClosed = true) {
+        $subject = new MailSubject(['subject' => $mail->subject]);
         $subjectTicketId = self::getTicketIdFromSubject($subject);
 
         $q = SuperTicket::find();
@@ -145,9 +169,9 @@ class EmailHelper
             $q->andWhere(['subject' => $subject->subject]);
         }
 
-        if($sender != false) {
+        if($mail->fromAddress != false) {
             $q->joinWith('superUser');
-            $q->andWhere(['super_user.email' => $sender]);
+            $q->andWhere(['super_user.email' => $mail->fromAddress]);
         }
 
         return $q;

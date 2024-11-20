@@ -4,6 +4,7 @@ namespace super\ticket\modules\console\commands;
 
 use elitedivision\amos\attachments\FileModule;
 use super\ticket\helpers\AttachmentsHelper;
+use super\ticket\helpers\TicketHelper;
 use super\ticket\helpers\UserHelper;
 use super\ticket\mail\MailSubject;
 use super\ticket\models\SuperMail;
@@ -80,7 +81,7 @@ class EmailController extends Controller
     public function evaluateMailScope(\PhpImap\IncomingMail $mail, SuperMail $source)
     {
         $refferedToTicket = EmailHelper::getMailTicketReffered($mail);
-
+print_r("\n\n\nEval Scope\n\n");
         if ($refferedToTicket->count()) {
             self::createCommentFromMail($mail, $source);
         } else {
@@ -93,24 +94,16 @@ class EmailController extends Controller
     public function createTicketFromMail(\PhpImap\IncomingMail $mail, SuperMail $source)
     {
         $contact = EmailHelper::getContactFromEmail($mail);
+        $relatedTickets = EmailHelper::getSubjectTicketReffered($mail, false)->all();
+        $followerContacts = EmailHelper::getFollowersFromEmail($mail);
+
+        $owner = UserHelper::getUserFromContact($source->domain_id, $contact);
+        $followers = UserHelper::getUsersFromContactsArray($source->domain_id, $followerContacts);
+
         $subject = new MailSubject(['subject' => $mail->subject]);
 
-        $relatedTickets = EmailHelper::getSubjectTicketReffered(
-            $subject,
-            $mail->fromAddress,
-            false)
-            ->all();
-
-        $user = UserHelper::parseAndGetUser(
-            $source->domain_id,
-            $contact['name'],
-            $contact['surname'],
-            $contact['email'],
-            $contact['phone']
-        );
-
         $newTicket = new SuperTicket([
-            'subject' => $mail->subject,
+            'subject' => $subject->subject,
             'content' => $mail->textHtml ?: $mail->textPlain,
             'status_id' => $source->status_id,
             'priority_id' => $source->priority_id,
@@ -119,7 +112,7 @@ class EmailController extends Controller
             'source_type' => SuperTicket::SOURCE_MAIL,
             'team_id' => $source->team_id,
             'domain_id' => $source->domain_id,
-            'super_user_id' => $user->id,
+            'super_user_id' => $owner->id,
             'metadata' => serialize($mail)
         ]);
 
@@ -148,11 +141,15 @@ class EmailController extends Controller
         }
 
         //Opener Follows His Own Ticket
-        SuperTicketFollower::follow($newTicket->id, $user->id);
+        SuperTicketFollower::follow($newTicket->id, $owner->id);
 
         //Link all related tickets
         foreach ($relatedTickets as $relatedTicket) {
             $newTicket->link('relatedTickets', $relatedTicket, ['type' => SuperTicketLink::TYPE_COPY]);
+        }
+
+        foreach ($followers as $follower) {
+            SuperTicketFollower::follow($newTicket->id, $follower->id);
         }
 
         return $newTicket;
@@ -161,25 +158,19 @@ class EmailController extends Controller
     public function createCommentFromMail(\PhpImap\IncomingMail $mail, SuperMail $source)
     {
         $contact = EmailHelper::getContactFromEmail($mail);
+        $followerContacts = EmailHelper::getFollowersFromEmail($mail);
 
-        $user = UserHelper::parseAndGetUser(
-            $source->domain_id,
-            $contact['name'],
-            $contact['surname'],
-            $contact['email'],
-            $contact['phone']
-        );
+        $owner = UserHelper::getUserFromContact($source->domain_id, $contact);
+        $followers = UserHelper::getUsersFromContactsArray($source->domain_id, $followerContacts);
 
-        $subject = new MailSubject(['subject' => $mail->subject]);
-
-        $relatedMailQ = EmailHelper::getTicketMatchesQuery($subject, $mail->fromAddress);
+        $relatedMailQ = EmailHelper::getTicketMatchesQuery($mail);
         $relatedMail = $relatedMailQ->one();
 
         $comment = SuperTicketEvent::createTicketEvent(
             $relatedMail->id,
             SuperTicketEvent::TYPE_COMMENT,
             $mail->textHtml ?: $mail->textPlain,
-            $user->id
+            $owner->id
         );
 
         if (!$comment) {
@@ -190,10 +181,14 @@ class EmailController extends Controller
         if($mail->hasAttachments()) {
             foreach ($mail->getAttachments() as $attachment) {
                 echo "ATTACH:::\n";
-                print_r($attachment);
+                print_r($attachment->name);
                 echo "\n:::ENDATTACH\n\n";
                 AttachmentsHelper::attachFile($attachment, $comment);
             }
+        }
+
+        foreach ($followers as $follower) {
+            SuperTicketFollower::follow($relatedMail->id, $follower->id);
         }
 
         return $comment;

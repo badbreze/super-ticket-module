@@ -137,7 +137,7 @@ class SuperTicketEvent extends ActiveRecord
 
     public static function createTicketEvent($ticket_id, $type, $body, $super_user_id = null, $metadata = null)
     {
-        if(empty($super_user_id)) {
+        if (empty($super_user_id)) {
             $superUser = SuperUser::findOne(['user_id' => Yii::$app->user->id]);
 
             $super_user_id = $superUser->id;
@@ -148,34 +148,36 @@ class SuperTicketEvent extends ActiveRecord
         $event->super_user_id = $super_user_id;
         $event->type = $type;
         $event->body = $body;
-        $event->metadata = $metadata;
+        $event->metadata = json_encode($metadata);
 
         if ($event->save()) {
             SuperTicketFollower::follow($ticket_id, $super_user_id);
 
             //TODO questa cosa della riapertura va riorganizzata in modo da avere codice più pulito
-            if($event->type == self::TYPE_COMMENT) {
+            if ($event->type == self::TYPE_COMMENT) {
                 if ($event->ticket->status->identifier == SuperTicketStatus::STATUS_RESOLVED) {
                     //TODO va resettata la SLA come richiesto da marco
                     $event->ticket->changeStatus(SuperTicketStatus::STATUS_OPEN);
                 }
             }
 
-            if(in_array($type, [self::TYPE_COMMENT/*, self::TYPE_STATUS_CHANGE*/])) {
+            if (in_array($type, [self::TYPE_COMMENT/*, self::TYPE_STATUS_CHANGE*/])) {
                 $event->sendNotification();
             }
 
             return $event;
+        } else {
+            throw new \Exception('Invalid Event Registration');
         }
 
-        return null;
+        //VOID
     }
 
     public function sendNotification()
     {
         $domainMailer = $this->ticket->domain->mailer;
 
-        if($domainMailer && $domainMailer->enabled) {
+        if ($domainMailer && $domainMailer->enabled) {
             $mailer = new Mailer([
                 'useFileTransport' => false,
                 'transport' => [
@@ -197,23 +199,29 @@ class SuperTicketEvent extends ActiveRecord
         //Override Layout for template usage
         $mailer->htmlLayout = "@vendor/badbreze/super-ticket-system/src/views/mail/layouts/html";
 
-        $followers = $this->ticket->getFollowers($this->super_user_id);
+        $recipients = $this->getRecipients();
+        $mainRecipient = reset($recipients);
+        unset($recipients[0]);
 
-        foreach ($followers->all() as $follower) {
-            $mailer->compose("@vendor/badbreze/super-ticket-system/src/views/mail/{$this->type}", [
+        $composition = $mailer
+            ->compose("@vendor/badbreze/super-ticket-system/src/views/mail/{$this->type}", [
                 'event' => $this
             ])
-                ->setFrom($domainMailer->from ?: 'no-reply@super.ticket')
-                ->setTo($follower->superUser->email)
-                ->setSubject($this->getNotificationSubject())
-                ->send();
-        }
+            ->setFrom($domainMailer->from ?: 'no-reply@super.ticket');
 
-        return true;
+        if (count($recipients))
+            $composition->setTo($mainRecipient->superUser->email);
+
+        $composition
+            ->setCc(ArrayHelper::map($recipients, 'superUser.email', 'superUser.fullName'))
+            ->setSubject($this->getNotificationSubject());
+
+        return $composition->send();
     }
 
     //TODO da finalizzare, scritto così è nammerda
-    public function getNotificationSubject() {
+    public function getNotificationSubject()
+    {
         $subject = "[#T{$this->ticket_id}] - ";
         $subject .= Yii::t('super', "ticket_activity_{$this->type}", [
             'id' => $this->ticket_id,
@@ -224,13 +232,33 @@ class SuperTicketEvent extends ActiveRecord
         return $subject;
     }
 
-    public function getPrevious($type = 'comment') {
+    public function getRecipients()
+    {
+        //metadata used for special functions like custom recipients
+        $metadata = !empty($this->metadata) ? json_decode($this->metadata, true) : [];
+
+        $exclusions = [$this->super_user_id];
+
+        if (!empty($metadata) && isset($metadata['recipients'])) {
+            return SuperTicketFollower::find()
+                ->andWhere(['ticket_id' => $this->ticket_id])
+                ->andWhere(['super_user_id' => $metadata['recipients']])
+                ->andWhere(['<>', 'super_user_id', [$this->super_user_id, $this->ticket->superUser->id]])
+                ->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW])
+                ->all();
+        }
+
+        return $this->ticket->getFollowers($exclusions)->all();
+    }
+
+    public function getPrevious($type = 'comment')
+    {
         $query = self::find()
             ->andWhere(['ticket_id' => $this->ticket_id])
-            ->andWhere(['<','id', $this->id])
+            ->andWhere(['<', 'id', $this->id])
             ->orderBy(['id' => SORT_DESC]);
 
-        if($type) {
+        if ($type) {
             $query->andWhere(['type' => $type]);
         }
 

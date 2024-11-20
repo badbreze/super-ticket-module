@@ -1,4 +1,5 @@
 <?php
+
 use super\ticket\helpers\RouteHelper;
 use super\ticket\helpers\DomainHelper;
 use super\ticket\helpers\StatusHelper;
@@ -31,7 +32,8 @@ $statuses = StatusHelper::getAvailableStatuses();
                 </button>
                 <div class="dropdown-menu" aria-labelledby="chengeStatusButton">
                     <?php foreach ($ticket->availableStatuses as $status): ?>
-                        <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'status', $status->id); ?>" data-status_id="<?= $status->id; ?>" class="dropdown-item status-changer-element">
+                        <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'status', $status->id); ?>"
+                           data-status_id="<?= $status->id; ?>" class="dropdown-item status-changer-element">
                             <i class="mdi mdi-file-pdf text-primary"></i>
                             <?= $status->name; ?>
                         </a> <!-- dropdown-item -->
@@ -51,7 +53,8 @@ $statuses = StatusHelper::getAvailableStatuses();
                 </button>
                 <div class="dropdown-menu" aria-labelledby="chengeStatusButton">
                     <?php foreach ($ticket->availableAssignees as $assignee): ?>
-                        <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'assignee', $assignee->id); ?>" data-status_id="<?= $assignee->id; ?>" class="dropdown-item status-changer-element">
+                        <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'assignee', $assignee->id); ?>"
+                           data-status_id="<?= $assignee->id; ?>" class="dropdown-item status-changer-element">
                             <i class="mdi mdi-file-pdf text-primary"></i>
                             <?= $assignee->fullName; ?>
                         </a> <!-- dropdown-item -->
@@ -71,7 +74,8 @@ $statuses = StatusHelper::getAvailableStatuses();
                 </button>
                 <div class="dropdown-menu" aria-labelledby="chengeStatusButton">
                     <?php foreach ($ticket->availablePriorities as $priority): ?>
-                        <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'priority', $priority->id); ?>" data-status_id="<?= $priority->id; ?>" class="dropdown-item status-changer-element">
+                        <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'priority', $priority->id); ?>"
+                           data-status_id="<?= $priority->id; ?>" class="dropdown-item status-changer-element">
                             <i class="mdi mdi-file-pdf text-primary"></i>
                             <?= $priority->name; ?> (<?= $priority->sla->grace_period; ?>)
                         </a> <!-- dropdown-item -->
@@ -106,6 +110,19 @@ $statuses = StatusHelper::getAvailableStatuses();
                 <?= Yii::t('super', 'Source'); ?>
             </b>
             <p><?= $ticket->source_type ?: '--'; ?></p>
+        </div>
+        <div class="mb-2">
+            <b>
+                <i class="fas fa-quote-right"></i>
+                <?= Yii::t('super', 'Followers'); ?>
+            </b>
+            <p>
+                <ul>
+                    <?php foreach ($ticket->followers as $follower): ?>
+                        <li><?= $follower->superUser->fullName; ?> (<?= $follower->superUser->id; ?>)</li>
+                    <?php endforeach; ?>
+                </ul>
+            </p>
         </div>
     </div>
 </div>

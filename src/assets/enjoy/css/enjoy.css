@@ -25,6 +25,10 @@
 
 }
 
+.ticket-pager li.active>a {
+    background-color: #b71b1a1f;
+}
+
 @keyframes MOVE-BG-EXPIRED {
     from {
         background-position: 0 0;

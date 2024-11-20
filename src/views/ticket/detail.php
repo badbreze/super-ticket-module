@@ -1,15 +1,12 @@
 <?php
 
-use kartik\editors\Summernote;
 use dosamigos\tinymce\TinyMce;
 use yii\widgets\ActiveForm;
 use yii\helpers\Html;
-use super\ticket\helpers\TicketHelper;
 use super\ticket\helpers\StatusHelper;
-use super\ticket\helpers\RouteHelper;
 use super\ticket\helpers\HtmlHelper;
-use elitedivision\amos\attachments\components\AttachmentsInput;
-use elitedivision\amos\attachments\FileModule;
+use yii\helpers\ArrayHelper;
+use conquer\select2\Select2Widget;
 
 $statuses = StatusHelper::getAvailableStatuses();
 
@@ -24,7 +21,7 @@ $statuses = StatusHelper::getAvailableStatuses();
 <div class="row g-0">
     <?php /* $this->render('../parts/navigator'); */ ?>
     <?= $this->render('parts/info', [
-            'ticket' => $ticket,
+        'ticket' => $ticket,
     ]); ?>
     <div class="ticket-main-content col-sm-10 p-4">
         <div class="d-table-row">
@@ -44,8 +41,8 @@ $statuses = StatusHelper::getAvailableStatuses();
 
         <p class="card-description mt-3">
             <?= Yii::t('super', 'Opened by <code>{name}</code> in {date}', [
-                    'name' => $ticket->superUser->fullName,
-                    'date' => $ticket->created_at
+                'name' => $ticket->superUser->fullName,
+                'date' => $ticket->created_at
             ]); ?>
         </p>
         <div id="ticket_thread">
@@ -57,9 +54,9 @@ $statuses = StatusHelper::getAvailableStatuses();
                 </blockquote>
                 <div class="attachments">
                     <?php
-                        foreach ($ticket->attachments as $attachment) {
-                            echo $this->render('parts/attach_link', ['attachment' => $attachment]);
-                        }
+                    foreach ($ticket->attachments as $attachment) {
+                        echo $this->render('parts/attach_link', ['attachment' => $attachment]);
+                    }
                     ?>
                 </div>
                 <?= $this->render('parts/relations', ['ticket' => $ticket]); ?>
@@ -79,11 +76,22 @@ $statuses = StatusHelper::getAvailableStatuses();
             </div>
             <?php
             $form = ActiveForm::begin([
-                                          'id' => 'comment-form',
-                                          //'layout' => 'horizontal',
-                                          'action' => ['/super/ticket/comment', 'ticket_id' => $ticket->id],
-                                      ]);
+                'id' => 'comment-form',
+                //'enableAjaxValidation' => true,
+                //'layout' => 'horizontal',
+                'action' => ['/super/ticket/comment', 'ticket_id' => $ticket->id],
+            ]);
             ?>
+
+            <?= $form->field($commentModel, 'recipients')->widget(
+                Select2Widget::className(),
+                [
+                    'items' => ArrayHelper::map($ticket->followers, 'superUser.id', 'superUser.fullName'),
+                    'multiple' => true,
+                    'bootstrap' => false
+                ]
+            ); ?>
+
             <?= $form->field($commentModel, 'body')->widget(TinyMce::className(), [
                 //'name' => 'test',
                 'options' => ['rows' => 7],
@@ -93,9 +101,9 @@ $statuses = StatusHelper::getAvailableStatuses();
                     'statusbar' => false,
                     'toolbar' => 'undo redo | formatselect | bold italic',
                 ]
-            ])->label(false); ?>
+            ]); ?>
 
-            <?= $form->field($commentModel, 'attachments')->fileInput([
+            <?php /* $form->field($commentModel, 'attachments')->fileInput([
                 'options' => [
                     'multiple' => true,
                     'placeholder' => ''
@@ -105,7 +113,7 @@ $statuses = StatusHelper::getAvailableStatuses();
                     'showPreview' => false,
                     'msgPlaceholder' => Yii::t('super', "Nessun allegato inserito")
                 ]
-            ])->label(false); ?>
+            ])->label(false);*/ ?>
 
             <?= Html::submitButton(Yii::t('app', 'Send'), ['class' => 'btn btn-primary']) ?>
             <?php /* Html::button(Yii::t('app', 'Send to Intranet'), ['class' => 'btn btn-info'])*/ ?>
