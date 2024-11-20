@@ -137,6 +137,9 @@ class EmailController extends Controller
             throw new Exception("Cant Save the new Ticket\n");
         }
 
+        //Store Original EML
+        //$mail->
+
         //Attachments from mail
         if($mail->hasAttachments()) {
             foreach ($mail->getAttachments() as $attachment) {

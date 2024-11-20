@@ -20,6 +20,7 @@ class EnjoyAsset extends \yii\web\AssetBundle {
         'css/menu.css',
         'css/fileicon.css',
         //'css/styles.css',
+        'css/enjoy.css',
     ];
 
     public $depends = [

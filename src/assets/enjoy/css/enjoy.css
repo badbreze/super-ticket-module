@@ -1,0 +1,35 @@
+.ticket-list tr.bg-expired {
+    background-image: url("../img/clocks.png");
+    /*background-size: 20%;*/
+    background-repeat: repeat;
+}
+
+.ticket-list tr.bg-expired:hover {
+    animation-name: MOVE-BG-EXPIRED;
+    animation-duration: 60s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    background-color: transparent;
+}
+
+.ticket-pager {
+    justify-content: center;
+}
+
+.ticket-pager li>* {
+    border: 1px dotted #00000069;
+    border-radius: 7px;
+    padding: 5px;
+    margin: 5px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;;
+
+}
+
+@keyframes MOVE-BG-EXPIRED {
+    from {
+        background-position: 0 0;
+    }
+    to {
+        background-position: -400px -400px;
+    }
+}

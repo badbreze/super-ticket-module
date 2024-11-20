@@ -17,12 +17,14 @@ use yii\helpers\Html;
     <div class="col-sm-10 p-4">
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
+            'layout' => "{summary}\n{pager}\n{items}\n{pager}",
             'pager' => [
                 'class' => yii\widgets\LinkPager::className(),
                 'firstPageLabel' => Yii::t('app', 'First'),
                 'lastPageLabel' => Yii::t('app', 'Last'),
+                'options' => ['class' => 'pagination ticket-pager'],
             ],
-            'tableOptions' => ['class' => 'table table-hover table-hover'],
+            'tableOptions' => ['class' => 'table table-hover table-hover ticket-list'],
             'headerRowOptions' => ['class' => 'x'],
             'rowOptions' => function($model, $key, $index, $grid) {
             /**@var $model \super\ticket\models\SuperTicket **/
@@ -30,7 +32,7 @@ use yii\helpers\Html;
                         $model->isDueDateElapsed &&
                     $model->status->identifier == \super\ticket\models\SuperTicketStatus::STATUS_OPEN
                 ) {
-                    return ['class' => 'bg-info'];
+                    return ['class' => 'bg-expired'];
                 }
             },
             'columns' => [

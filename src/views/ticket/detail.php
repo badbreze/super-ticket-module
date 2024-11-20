@@ -28,7 +28,7 @@ $statuses = StatusHelper::getAvailableStatuses();
     ]); ?>
     <div class="ticket-main-content col-sm-10 p-4">
         <div class="d-table-row">
-            <a href="<?= RouteHelper::toOrganization($ticket->domain_id); ?>" class="btn btn-outline-dark d-table-cell">
+            <a href="<?= \yii\helpers\Url::previous(); ?>" class="btn btn-outline-dark d-table-cell">
                 <i class="fa fa-arrow-left"></i>
             </a>
             <div class="d-table-cell">
