@@ -11,12 +11,18 @@ class Module extends \yii\base\Module
      */
     public $controllerNamespace = 'super\ticket\controllers';
 
+    public $encriptionKey = null;
+
     /**
      * {@inheritdoc}
      */
     public function init()
     {
         parent::init();
+
+        if(empty($this->encriptionKey)) {
+            throw new \Exception("Encription Key is not configured");
+        }
 
         $this->modules = [
             'api' => [

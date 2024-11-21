@@ -11,7 +11,8 @@
     "require": {
         "php": ">=7.4",
 
-        "2amigos/yii2-tinymce-widget" : "*",
+        "2amigos/yii2-tinymce-widget": "*",
+        "conquer/select2": "*",
         "php-imap/php-imap": "*",
         "trntv/yii2-aceeditor": "^2.0.0"
     },

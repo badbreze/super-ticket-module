@@ -81,15 +81,24 @@ use dosamigos\tinymce\TinyMce;
         </p>
         <?php $this->endBlock(); ?>
 
+        <?php $this->beginBlock('members'); ?>
+
+        <?php $this->endBlock(); ?>
+
         <?=
         Tabs::widget(
             [
                 'encodeLabels' => false,
                 'items' => [
                     [
-                        'label' => Yii::t('models', 'SuperTeam'),
+                        'label' => Yii::t('models', 'Team Configuration'),
                         'content' => $this->blocks['main'],
                         'active' => true,
+                    ],
+                    [
+                        'label' => Yii::t('models', 'Members'),
+                        'content' => $this->blocks['members'],
+                        'active' => false,
                     ],
                 ]
             ]

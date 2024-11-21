@@ -86,7 +86,7 @@ $statuses = StatusHelper::getAvailableStatuses();
             <?= $form->field($commentModel, 'recipients')->widget(
                 Select2Widget::className(),
                 [
-                    'items' => ArrayHelper::map($ticket->followers, 'superUser.id', 'superUser.fullName'),
+                    'items' => ArrayHelper::map($ticket->followers, 'super_user_id', 'superUser.fullName'),
                     'multiple' => true,
                     'bootstrap' => false
                 ]
