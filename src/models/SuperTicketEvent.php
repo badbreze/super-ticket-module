@@ -209,8 +209,12 @@ class SuperTicketEvent extends ActiveRecord
             ])
             ->setFrom($domainMailer->from ?: 'no-reply@super.ticket');
 
-        if (count($recipients))
+        if ($mainRecipient) {
             $composition->setTo($mainRecipient->superUser->email);
+        } else {
+            Yii::$app->session->addFlash('error', Yii::t('super', 'No Recipients For Notification'));
+            return false;
+        }
 
         $composition
             ->setCc(ArrayHelper::map($recipients, 'superUser.email', 'superUser.fullName'))
@@ -243,8 +247,8 @@ class SuperTicketEvent extends ActiveRecord
             return SuperTicketFollower::find()
                 ->andWhere(['ticket_id' => $this->ticket_id])
                 ->andWhere(['super_user_id' => $metadata['recipients']])
-                ->andWhere(['<>', 'super_user_id', [$this->super_user_id, $this->ticket->superUser->id]])
-                ->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW])
+                ->andWhere(['not', ['super_user_id' => [$this->super_user_id]]])
+                //->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW])
                 ->all();
         }
 

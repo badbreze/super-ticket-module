@@ -12,7 +12,8 @@ class HtmlHelper
 {
     public static function clean($html) {
         return HtmlPurifier::process($html, [
-            //
+            'URI.AllowedSchemes' => array('data' => true),
+            //'HTML.AllowedAttributes' => 'src, height, width, alt'
         ]);
     }
 
