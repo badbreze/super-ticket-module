@@ -6,7 +6,6 @@ use super\ticket\db\ActiveRecord;
 use Yii;
 
 /**
- * This is the model class for table "{{%super_customer_agent_mm}}".
  *
  * @property int $id
  * @property string|null $status

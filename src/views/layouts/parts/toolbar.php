@@ -54,19 +54,19 @@ $currentStatus = StatusHelper::getCurrentStatus();
                 <div class="dropdown-menu shadow-sm border-0" style="text-align: left">
                     <a class="dropdown-item"
                        href="/super/team">
-                        <i class="fas fa-users"></i> Teams
+                        <i class="fas fa-users"></i> <?= Yii::t('super', 'Teams'); ?>
                     </a>
                     <a class="dropdown-item" href="/super/sla" tabindex="-1">
-                        <i class="fas fa-hourglass-half"></i> Sla
+                        <i class="fas fa-hourglass-half"></i> <?= Yii::t('super', 'Sla'); ?>
                     </a>
                     <a class="dropdown-item" href="/super/customer" tabindex="-1">
-                        <i class="fas fa-user-tie"></i> Customers
+                        <i class="fas fa-user-tie"></i> <?= Yii::t('super', 'Customers'); ?>
                     </a>
                     <a class="dropdown-item" href="/super/domain" tabindex="-1">
-                        <i class="fas fa-store"></i> Domains
+                        <i class="fas fa-store"></i>  <?= Yii::t('super', 'Domains'); ?>
                     </a>
                     <a class="dropdown-item" href="/super/mails" tabindex="-1">
-                        <i class="far fa-envelope"></i> Mails
+                        <i class="far fa-envelope"></i> <?= Yii::t('super', 'Mails'); ?>
                     </a>
                 </div>
             </div>

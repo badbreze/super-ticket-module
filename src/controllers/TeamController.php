@@ -74,11 +74,15 @@ class TeamController extends Controller
     {
         $model = $this->findModel($id);
 
+
         if ($model->load(\Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(Url::previous());
         } else {
+            $membersDataProvider = new ActiveDataProvider(['query' => $model->getTeamMembers()]);
+
             return $this->render('update', [
                 'model' => $model,
+                'membersDataProvider' => $membersDataProvider
             ]);
         }
     }

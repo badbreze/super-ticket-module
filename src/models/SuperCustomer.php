@@ -23,7 +23,7 @@ use Yii;
  * @property User $deletedBy
  * @property SuperCustomerAgentMm[] $superCustomerAgentMms
  * @property SuperCustomerRole[] $superCustomerRoles
- * @property SuperDomain[] $superDomains
+ * @property SuperDomain[] $domains
  * @property SuperTicketPriority[] $superTicketPriorities
  * @property SuperTicketStatus[] $superTicketStatuses
  * @property User $updatedBy
@@ -115,7 +115,7 @@ class SuperCustomer extends ActiveRecord
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getSuperDomains()
+    public function getDomains()
     {
         return $this->hasMany(SuperDomain::className(), ['customer_id' => 'id']);
     }

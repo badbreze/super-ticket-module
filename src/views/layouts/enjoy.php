@@ -1,7 +1,7 @@
 <?php
 
 use yii\widgets\Breadcrumbs;
-
+use lo\modules\noty\Wrapper;
 
 /**
  * @var $this \yii\web\View
@@ -24,6 +24,9 @@ use yii\widgets\Breadcrumbs;
 
     <body>
     <?php $this->beginBody() ?>
+    <?= Wrapper::widget([
+        'layerClass' => 'lo\modules\noty\layers\JqueryToastPlugin',
+    ]); ?>
 
     <?= $this->render('parts/toolbar'); ?>
 
@@ -46,6 +49,7 @@ use yii\widgets\Breadcrumbs;
                         ?>
                     </div>
                 <?php endif; ?>
+
                 <div class="content-wrapper px-3">
                     <?= $content; ?>
                 </div>

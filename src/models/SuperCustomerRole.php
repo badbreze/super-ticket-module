@@ -28,6 +28,12 @@ use Yii;
  */
 class SuperCustomerRole extends ActiveRecord
 {
+    public const ROLE_OWNER = 1;
+    public const ROLE_ADMIN = 2;
+    public const ROLE_MANAGER = 3;
+    public const ROLE_VIEWER = 4;
+    public const ROLE_AGENT = 5;
+
     /**
      * {@inheritdoc}
      */

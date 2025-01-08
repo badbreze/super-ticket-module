@@ -19,7 +19,7 @@ use Yii;
  * @property int|null $updated_by Updated by
  * @property int|null $deleted_by Deleted by
  *
- * @property SuperAgent $agent
+ * @property SuperUser $agent
  * @property User $createdBy
  * @property SuperCustomer $customer
  * @property SuperCustomerRole $customerRole
@@ -46,7 +46,7 @@ class SuperCustomerAgentMm extends ActiveRecord
             [['agent_id', 'customer_id', 'customer_role_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperCustomer::className(), 'targetAttribute' => ['customer_id' => 'id']],
-            [['agent_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperAgent::className(), 'targetAttribute' => ['agent_id' => 'id']],
+            [['agent_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperUser::className(), 'targetAttribute' => ['agent_id' => 'id']],
             [['customer_role_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperCustomerRole::className(), 'targetAttribute' => ['customer_role_id' => 'id']],
             [['created_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['created_by' => 'id']],
             [['updated_by'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['updated_by' => 'id']],
@@ -80,7 +80,7 @@ class SuperCustomerAgentMm extends ActiveRecord
      */
     public function getAgent()
     {
-        return $this->hasOne(SuperAgent::className(), ['id' => 'agent_id']);
+        return $this->hasOne(SuperUser::className(), ['id' => 'agent_id']);
     }
 
     /**

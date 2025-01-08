@@ -44,7 +44,9 @@ class MailSubject extends BaseObject
         $result = $subject;
 
         do {
+            print_r("PREG SUBJECT: $result\n");
             $result = preg_replace($rpRx, '', $result);
+            print_r("PREG SUBJECT RESULT: $result\n");
             preg_match_all($rpRx, $result, $replaceMatches, PREG_SET_ORDER, 0);
         } while(is_array($replaceMatches) && count($replaceMatches) && count($replaceMatches[0]));
 

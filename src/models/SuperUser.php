@@ -47,8 +47,20 @@ class SuperUser extends ActiveRecord
             [['domain_id', 'user_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['name', 'surname', 'phone'], 'string', 'max' => 64],
-            [['email'], 'string', 'max' => 128],
+            [['email'], 'email'],
             [['user_id'], 'unique'],
+            [['email'], 'required',
+                'when' => function ($model) {
+                    return empty($model->phone);
+                },
+                'whenClient' => "function (attribute, value) {return !$('#superuser-phone').val();}"
+            ],
+            [['phone'], 'required',
+                'when' => function ($model) {
+                    return empty($model->email);
+                },
+                'whenClient' => "function (attribute, value) {return !$('#superuser-email').val();}"
+            ],
             [['domain_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperDomain::className(), 'targetAttribute' => ['domain_id' => 'id']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Yii::$app->user->identityClass, 'targetAttribute' => ['user_id' => 'id']],
         ];
@@ -63,6 +75,9 @@ class SuperUser extends ActiveRecord
             'id' => Yii::t('super', 'ID'),
             'name' => Yii::t('super', 'Name'),
             'surname' => Yii::t('super', 'Surname'),
+            'email' => Yii::t('super', 'Email'),
+            'phone' => Yii::t('super', 'Phone'),
+            'domain' => Yii::t('super', 'Domain'),
             'domain_id' => Yii::t('super', 'Domain ID'),
             'user_id' => Yii::t('super', 'User ID'),
             'created_at' => Yii::t('super', 'Created At'),
@@ -73,6 +88,12 @@ class SuperUser extends ActiveRecord
             'deleted_by' => Yii::t('super', 'Deleted By'),
         ];
     }
+
+    public function __toString()
+    {
+        return $this->fullName;
+    }
+
 
     /**
      * Gets query for [[Domain]].
@@ -107,7 +128,18 @@ class SuperUser extends ActiveRecord
     /**
      * @return string
      */
-    public function getFullName() {
-        return $this->name .' '. $this->surname;
+    public function getFullName()
+    {
+        return $this->name . ' ' . $this->surname;
+    }
+
+    public function getCustomersMm()
+    {
+        return $this->hasMany(SuperCustomerAgentMm::className(), ['agent_id' => 'id']);
+    }
+
+    public function getCustomers()
+    {
+        return $this->hasMany(SuperCustomer::className(), ['id' => 'customer_id'])->via('customersMm');
     }
 }

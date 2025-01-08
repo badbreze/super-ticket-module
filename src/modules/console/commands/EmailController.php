@@ -103,7 +103,7 @@ print_r("\n\n\nEval Scope\n\n");
         $subject = new MailSubject(['subject' => $mail->subject]);
 
         $newTicket = new SuperTicket([
-            'subject' => $subject->subject,
+            'subject' => $subject->subject ?: 'Support',
             'content' => $mail->textHtml ?: $mail->textPlain,
             'status_id' => $source->status_id,
             'priority_id' => $source->priority_id,

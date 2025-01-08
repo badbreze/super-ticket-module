@@ -83,14 +83,22 @@ $statuses = StatusHelper::getAvailableStatuses();
             ]);
             ?>
 
-            <?= $form->field($commentModel, 'recipients')->widget(
-                Select2Widget::className(),
-                [
-                    'items' => ArrayHelper::map($ticket->followers, 'super_user_id', 'superUser.fullName'),
-                    'multiple' => true,
-                    'bootstrap' => false
-                ]
-            ); ?>
+            <div class="form-row">
+                <div class="col-11">
+                    <?= $form->field($commentModel, 'recipients')->widget(
+                        Select2Widget::className(),
+                        [
+                            'items' => ArrayHelper::map($ticket->followable, 'id', 'fullName'),
+                            'multiple' => true,
+                            'bootstrap' => false
+                        ]
+                    ); ?>
+                </div>
+                <a href="#" class="col mt-4" data-toggle="modal" data-target="#recipient-modal">
+                    <i class="fa fa-plus"></i>
+                    <?= Yii::t('super', 'Add recipient'); ?>
+                </a>
+            </div>
 
             <?= $form->field($commentModel, 'body')->widget(TinyMce::className(), [
                 //'name' => 'test',
@@ -115,7 +123,7 @@ $statuses = StatusHelper::getAvailableStatuses();
                 ]
             ])->label(false);*/ ?>
 
-            <?= Html::submitButton(Yii::t('app', 'Send'), ['class' => 'btn btn-primary']) ?>
+            <?= Html::submitButton(Yii::t('super', 'Send'), ['class' => 'btn btn-primary']) ?>
             <?php /* Html::button(Yii::t('app', 'Send to Intranet'), ['class' => 'btn btn-info'])*/ ?>
             <?php
             ActiveForm::end();
@@ -123,3 +131,10 @@ $statuses = StatusHelper::getAvailableStatuses();
         </div>
     </div>
 </div>
+
+<?php \yii\bootstrap4\Modal::begin(['id' => 'recipient-modal', 'title' => Yii::t('super', 'Add Recipient')]); ?>
+    <?= $this->render('parts/recipient_modal', [
+            'model' => new \super\ticket\models\SuperUser(),
+            'ticket' => $ticket,
+]); ?>
+<?php \yii\bootstrap4\Modal::end(); ?>

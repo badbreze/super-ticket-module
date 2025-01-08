@@ -37,7 +37,7 @@ use Yii;
  * @property int|null $deleted_by Cancellato da
  *
  * @property SuperDomain $domain
- * @property SuperAgent $agent
+ * @property SuperUser $agent
  * @property SuperTeam $team
  * @property SuperTicketPriority $priority
  * @property SuperTicketStatus $status
@@ -187,7 +187,7 @@ class SuperMail extends ActiveRecord
      */
     public function getAgent()
     {
-        return $this->hasOne(SuperAgent::className(), ['id' => 'agent_id']);
+        return $this->hasOne(SuperUser::className(), ['id' => 'agent_id']);
     }
 
     /**

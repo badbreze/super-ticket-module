@@ -17,7 +17,7 @@ if (isset($actionColumnTemplates)) {
     $actionColumnTemplateString = $actionColumnTemplate;
 } else {
     Yii::$app->view->params['pageButtons'] = Html::a(
-        '<span class="glyphicon glyphicon-plus"></span> ' . Yii::t('app', 'New'), ['create'],
+        '<span class="glyphicon glyphicon-plus"></span> ' . Yii::t('super', 'New'), ['create'],
         ['class' => 'btn btn-success']
     );
     $actionColumnTemplateString = "{view} {update} {delete}";
@@ -42,13 +42,13 @@ $actionColumnTemplateString = '<div class="action-buttons">' . $actionColumnTemp
     <h1>
         <?= Yii::t('models.plural', 'Super Customer') ?>
         <small>
-            <?= Yii::t('app', 'List') ?>
+            <?= Yii::t('super', 'List') ?>
         </small>
     </h1>
     <div class="clearfix crud-navigation">
         <div class="pull-left">
             <?= Html::a(
-                '<span class="glyphicon glyphicon-plus"></span> ' . Yii::t('app', 'New'),
+                '<span class="glyphicon glyphicon-plus"></span> ' . Yii::t('super', 'New'),
                 ['create'],
                 ['class' => 'btn btn-success']
             ) ?>
@@ -62,8 +62,8 @@ $actionColumnTemplateString = '<div class="action-buttons">' . $actionColumnTemp
                                  'dataProvider' => $dataProvider,
                                  'pager' => [
                                      'class' => yii\widgets\LinkPager::className(),
-                                     'firstPageLabel' => Yii::t('app', 'First'),
-                                     'lastPageLabel' => Yii::t('app', 'Last'),
+                                     'firstPageLabel' => Yii::t('super', 'First'),
+                                     'lastPageLabel' => Yii::t('super', 'Last'),
                                  ],
                                  'tableOptions' => ['class' => 'table table-striped table-bordered table-hover'],
                                  'headerRowOptions' => ['class' => 'x'],
@@ -74,8 +74,8 @@ $actionColumnTemplateString = '<div class="action-buttons">' . $actionColumnTemp
                                          'buttons' => [
                                              'view' => function ($url, $model, $key) {
                                                  $options = [
-                                                     'title' => Yii::t('app', 'View'),
-                                                     'aria-label' => Yii::t('app', 'View'),
+                                                     'title' => Yii::t('super', 'View'),
+                                                     'aria-label' => Yii::t('super', 'View'),
                                                      'data-pjax' => '0',
                                                  ];
                                                  return Html::a(

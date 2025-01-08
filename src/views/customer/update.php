@@ -9,7 +9,7 @@ use yii\helpers\Html;
 
 $this->title = Yii::t('models', 'Super Customer');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('models', 'Super Customer'), 'url' => ['index']];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Edit');
+$this->params['breadcrumbs'][] = Yii::t('super', 'Edit');
 ?>
 <div class="giiant-crud super-customer-update">
 

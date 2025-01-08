@@ -69,7 +69,7 @@ use yii\helpers\StringHelper;
 
         <?= Html::submitButton(
             '<span class="glyphicon glyphicon-check"></span> ' .
-            ($model->isNewRecord ? Yii::t('app', 'Create') : Yii::t('app', 'Save')),
+            ($model->isNewRecord ? Yii::t('super', 'Create') : Yii::t('super', 'Save')),
             [
                 'id' => 'save-' . $model->formName(),
                 'class' => 'btn btn-success'

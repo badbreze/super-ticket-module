@@ -63,7 +63,7 @@ use yii\helpers\Html;
                     'attribute' => 'agent',
                     'format' => 'raw',
                     'value' => function ($model) {
-                        return Yii::$app->view->render('parts/grid_user', ['model' => $model->agent->superUser]);
+                        return Yii::$app->view->render('parts/grid_user', ['model' => $model->agent]);
                     },
                     'label' => Yii::t('super', 'Assignee'),
                 ],

@@ -28,14 +28,14 @@ $statuses = StatusHelper::getAvailableStatuses();
             <div class="dropdown">
                 <button type="button" id="chengeStatusButton" class="btn dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <?= $ticket->status->name ?: '--'; ?>
+                    <?= Yii::t('super', $ticket->status->name) ?: '--'; ?>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="chengeStatusButton">
                     <?php foreach ($ticket->availableStatuses as $status): ?>
                         <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'status', $status->id); ?>"
                            data-status_id="<?= $status->id; ?>" class="dropdown-item status-changer-element">
                             <i class="mdi mdi-file-pdf text-primary"></i>
-                            <?= $status->name; ?>
+                            <?= Yii::t('super', $status->name); ?>
                         </a> <!-- dropdown-item -->
                     <?php endforeach; ?>
                 </div> <!-- dropdown-menu -->
@@ -70,14 +70,14 @@ $statuses = StatusHelper::getAvailableStatuses();
             <div class="dropdown">
                 <button type="button" id="chengeStatusButton" class="btn dropdown-toggle"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <?= $ticket->priority->name ?: '--'; ?>
+                    <?= Yii::t('super', $ticket->priority->name) ?: '--'; ?>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="chengeStatusButton">
                     <?php foreach ($ticket->availablePriorities as $priority): ?>
                         <a href="<?= RouteHelper::updateTicketAttribute($ticket->id, 'priority', $priority->id); ?>"
                            data-status_id="<?= $priority->id; ?>" class="dropdown-item status-changer-element">
                             <i class="mdi mdi-file-pdf text-primary"></i>
-                            <?= $priority->name; ?> (<?= $priority->sla->grace_period; ?>)
+                            <?= Yii::t('super', $priority->name); ?> (<?= $priority->sla->grace_period; ?>h)
                         </a> <!-- dropdown-item -->
                     <?php endforeach; ?>
                 </div> <!-- dropdown-menu -->
@@ -109,7 +109,7 @@ $statuses = StatusHelper::getAvailableStatuses();
                 <i class="fas fa-mail-bulk"></i>
                 <?= Yii::t('super', 'Source'); ?>
             </b>
-            <p><?= $ticket->source_type ?: '--'; ?></p>
+            <p><?= Yii::t('super', $ticket->source_type) ?: '--'; ?></p>
         </div>
         <div class="mb-2">
             <b>
@@ -119,7 +119,7 @@ $statuses = StatusHelper::getAvailableStatuses();
             <p>
                 <ul>
                     <?php foreach ($ticket->followers as $follower): ?>
-                        <li><?= $follower->superUser->fullName; ?> (<?= $follower->superUser->id; ?>)</li>
+                        <li><?= $follower->superUser->fullName; ?> (<?= $follower->superUser->id; ?>[<?= $follower->superUser->domain_id; ?>])</li>
                     <?php endforeach; ?>
                 </ul>
             </p>

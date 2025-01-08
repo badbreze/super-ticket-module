@@ -13,6 +13,7 @@ use Yii;
  * @property string|null $identifier URL
  * @property int|null $customer_id
  * @property int|null $sla_id
+ * @property int|null $weight
  * @property string|null $created_at Creato il
  * @property string|null $updated_at Aggiornato il
  * @property string|null $deleted_at Cancellato il
@@ -46,7 +47,7 @@ class SuperTicketPriority extends ActiveRecord
     {
         return [
             [['name'], 'required'],
-            [['customer_id', 'sla_id', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
+            [['customer_id', 'sla_id', 'weight', 'created_by', 'updated_by', 'deleted_by'], 'integer'],
             [['created_at', 'updated_at', 'deleted_at'], 'safe'],
             [['name', 'identifier'], 'string', 'max' => 64],
             [['customer_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperCustomer::className(), 'targetAttribute' => ['customer_id' => 'id']],
@@ -64,6 +65,7 @@ class SuperTicketPriority extends ActiveRecord
             'name' => Yii::t('super', 'Name'),
             'identifier' => Yii::t('super', 'Identifier'),
             'customer_id' => Yii::t('super', 'Customer ID'),
+            'weight' => Yii::t('super', 'Weight'),
             'created_at' => Yii::t('super', 'Created At'),
             'updated_at' => Yii::t('super', 'Updated At'),
             'deleted_at' => Yii::t('super', 'Deleted At'),

@@ -8,14 +8,14 @@ use super\ticket\helpers\HtmlHelper;
 ?>
 <div class="ticket-comment-single">
     <div class="ticket-comment-info">
-        <?php if($event->creator && $event->creator->profile) : ?>
-        <div class="ticket-comment-avatar">
-            <img class="avatar" src="<?= $event->creator->profile->getAvatar()->getUrl(
-                false,
-                false,
-                true
-            ); ?>" />
-        </div>
+        <?php if($event->creator && $event->creator->user->profile) : ?>
+            <div class="ticket-comment-avatar">
+                <img class="avatar" src="<?= $event->creator->user->profile->getAvatar()->getUrl(
+                    false,
+                    false,
+                    true
+                ); ?>" />
+            </div>
         <?php else: ?>
             <div class="ticket-comment-avatar">
                 <img class="avatar" src="https://www.gravatar.com/avatar/<?= md5(
@@ -24,10 +24,10 @@ use super\ticket\helpers\HtmlHelper;
             </div>
         <?php endif; ?>
         <div class="d-inline-block">
-            <?= Yii::t('super', 'In'); ?>
-            <?= $event->created_at; ?>
-            <code><?= $event->superUser->fullName; ?></code>
-            <?= Yii::t('super', 'wrote'); ?>
+            <?= Yii::t('super', 'In {date} <code>{name}</code> wrote', [
+                'name' => $event->superUser->fullName,
+                'date' => $event->created_at
+            ]); ?>
         </div>
         <hr class="mt-1" />
     </div>

@@ -22,11 +22,12 @@ use Yii;
  * @property int|null $updated_by Aggiornato da
  * @property int|null $deleted_by Cancellato da
  *
- * @property SuperAgent $agent
+ * @property SuperUser $agent
  * @property SuperDomain $domain
  * @property SuperMail[] $superMails
  * @property SuperTicket[] $superTickets
  * @property string $signature
+ * @property SuperUser[] $availableMembers
  */
 class SuperTeam extends ActiveRecord
 {
@@ -51,7 +52,7 @@ class SuperTeam extends ActiveRecord
             [['mail_signature'], 'string'],
             [['description'], 'string', 'max' => 255],
             [['domain_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperDomain::className(), 'targetAttribute' => ['domain_id' => 'id']],
-            [['agent_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperAgent::className(), 'targetAttribute' => ['agent_id' => 'id']],
+            [['agent_id'], 'exist', 'skipOnError' => true, 'targetClass' => SuperUser::className(), 'targetAttribute' => ['agent_id' => 'id']],
         ];
     }
 
@@ -83,7 +84,7 @@ class SuperTeam extends ActiveRecord
      */
     public function getAgent()
     {
-        return $this->hasOne(SuperAgent::className(), ['id' => 'agent_id']);
+        return $this->hasOne(SuperUser::className(), ['id' => 'agent_id']);
     }
 
     /**
@@ -116,8 +117,40 @@ class SuperTeam extends ActiveRecord
         return $this->hasMany(SuperMail::class, ['domain_id' => 'id']);
     }
 
+    public function getTeamMembersMM()
+    {
+        return $this->hasMany(SuperTeamMembers::class, ['super_team_id' => 'id']);
+    }
+
+    public function getTeamMembers()
+    {
+        return $this->hasMany(SuperUser::class, ['id' => 'super_agent_id'])->via('teamMembersMM');
+    }
+
     public function getSignature() {
 
         return StringHelper::parse($this->mail_signature, ['team' => $this]);
+    }
+
+    public function getAvailableMembers()
+    {
+        return SuperUser::find()
+            ->joinWith('customers.domains')
+            ->andWhere([
+                'OR',
+                [
+                    'AND',
+                    ['super_domain.id' => $this->domain_id],
+                    ['customer_role_id' => [
+                        SuperCustomerRole::ROLE_OWNER,
+                        SuperCustomerRole::ROLE_ADMIN,
+                        SuperCustomerRole::ROLE_AGENT,
+                        SuperCustomerRole::ROLE_MANAGER,
+                    ]
+                    ]
+                ],
+                ['super_user.domain_id' => null],
+            ])
+            ->all();
     }
 }

@@ -6,6 +6,7 @@ use elitedivision\amos\attachments\behaviors\FileBehavior;
 use elitedivision\amos\attachments\models\File;
 use super\ticket\db\ActiveRecord;
 use super\ticket\helpers\DateTimeHelper;
+use super\ticket\helpers\UserHelper;
 use Yii;
 use yii\base\Event;
 use yii\db\ActiveQuery;
@@ -35,7 +36,7 @@ use yii\helpers\ArrayHelper;
  * @property int|null $updated_by Aggiornato da
  * @property int|null $deleted_by Cancellato da
  *
- * @property SuperAgent $agent
+ * @property SuperUser $agent
  * @property SuperTeam $team
  * @property SuperDomain $domain
  * @property SuperTicketPriority $priority
@@ -51,8 +52,9 @@ use yii\helpers\ArrayHelper;
  * @property SuperTicketLink[] $reverseLinks
  * @property SuperTicketStatus[] $availableStatuses
  * @property SuperTicketPriority[] $availablePriorities
- * @property SuperAgent[] $availableAssignees
+ * @property SuperUser[] $availableAssignees
  * @property SuperTicketFollower[] $followers
+ * @property SuperUser[] $followable
  * @property File[] $attachments
  * @property bool $isDueDateElapsed
  */
@@ -152,13 +154,11 @@ class SuperTicket extends ActiveRecord
     }
 
     /**
-     * Gets query for [[Agent]].
-     *
      * @return \yii\db\ActiveQuery
      */
     public function getAgent()
     {
-        return $this->hasOne(SuperAgent::className(), ['id' => 'agent_id']);
+        return $this->hasOne(SuperUser::className(), ['id' => 'agent_id']);
     }
 
     /**
@@ -258,8 +258,35 @@ class SuperTicket extends ActiveRecord
     {
         return $this
             ->hasMany(SuperTicketFollower::className(), ['ticket_id' => 'id'])
-            ->andOnCondition(['<>', 'super_user_id', $exclusions])
+            ->andOnCondition(['not', ['super_user_id' => $exclusions]])
             ->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
+    }
+
+    /**
+     * @param $exclusions
+     * @return ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
+    public function getFollowable($exclusions = 0) {
+        //Basic Filter
+        $q = SuperUser::find()
+            ->andWhere(['not', ['id' => $exclusions]]);
+
+        //Magic Getter to result rows
+        $q->multiple = true;
+
+        if(Yii::$app->user->can('SUPER_ADMIN')) {
+            return $q;
+        }
+
+        $q->andWhere([
+            'OR',
+            ['id' => $this->getFollowers()->select('super_user_id')],
+            ['domain_id' => $this->domain_id]
+        ]);
+
+//print_r($q->createCommand()->rawSql);die;
+        return $q;
     }
 
     public function addEvent($type, $body, $super_user_id = null, $metadata = null)
@@ -318,12 +345,29 @@ class SuperTicket extends ActiveRecord
 
     public function getAvailablePriorities()
     {
-        return SuperTicketPriority::find()->all();
+        return SuperTicketPriority::find()->orderBy(['weight' => SORT_ASC])->all();
     }
 
     public function getAvailableAssignees()
     {
-        return SuperAgent::find()->all();
+        return SuperUser::find()
+            ->joinWith('customers.domains')
+            ->andWhere([
+                'OR',
+                [
+                    'AND',
+                    ['super_domain.id' => $this->domain_id],
+                    ['customer_role_id' => [
+                            SuperCustomerRole::ROLE_OWNER,
+                            SuperCustomerRole::ROLE_ADMIN,
+                            SuperCustomerRole::ROLE_AGENT,
+                            SuperCustomerRole::ROLE_MANAGER,
+                        ]
+                    ]
+                ],
+                ['super_user.domain_id' => null],
+            ])
+            ->all();
     }
 
     public function updateAssignee($agent_id)
@@ -333,7 +377,7 @@ class SuperTicket extends ActiveRecord
         $this->addEvent(
             SuperTicketEvent::TYPE_ASSIGNEE,
             Yii::t('super', 'assigned to {user}', ['user' => $this->agent->fullName]),
-            $this->agent->super_user_id
+            $this->agent->id
         );
 
         return $this->save(false);
@@ -460,7 +504,7 @@ class SuperTicket extends ActiveRecord
 
         $this->addEvent(
             SuperTicketEvent::TYPE_STATUS_CHANGE,
-            Yii::t('super', 'Marked as {status}', ['status' => $this->status->name])
+            Yii::t('super', 'Marked as {status}', ['status' =>  Yii::t('super', $this->status->name)])
         );
 
         return $this->save(false);

@@ -49,9 +49,9 @@ class TicketCommentForm extends Model
     public function attributeLabels()
     {
         return [
-            'verifyCode' => 'Verification Code',
-            'recipients' => 'Recipients',
-            'body' => 'Comment',
+            'verifyCode' => Yii::t('super', 'Verification Code'),
+            'recipients' => Yii::t('super', 'Recipients'),
+            'body' => Yii::t('super', 'Comment'),
         ];
     }
 

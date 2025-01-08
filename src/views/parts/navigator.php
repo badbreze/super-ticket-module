@@ -31,13 +31,13 @@ $currentStatus = StatusHelper::getCurrentStatus();
         </div-->
         <div class="row mb-4">
             <div class="col">
-                <h6 class="">Stato</h6>
+                <h6 class=""><?= Yii::t('super', 'Status'); ?></h6>
 
                 <?php foreach ($statuses as $status): ?>
                     <p>
                         <a class="<?= $status->identifier == $currentStatus->identifier ? 'active' : ''; ?>" href="<?= RouteHelper::toOrganization($currentDomain->id, $status->identifier); ?>">
                             <i class="fa fa-angle-right"></i>
-                            <?= $status->name; ?>
+                            <?= Yii::t('super', $status->name); ?>
                         </a>
                     </p>
                 <?php endforeach; ?>

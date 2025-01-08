@@ -160,7 +160,7 @@ class EmailHelper
         // per favoreggiare i nuovi workflow anche a parità di subject
         if($ignoreClosed) {
             $q->joinWith('status');
-            $q->andWhere(['<>', 'super_ticket_status.identifier', SuperTicketStatus::STATUS_CLOSED]);
+            $q->andWhere(['not', ['super_ticket_status.identifier' => SuperTicketStatus::STATUS_CLOSED]]);
         }
 
         if($subjectTicketId) {

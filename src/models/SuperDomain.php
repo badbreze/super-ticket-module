@@ -76,6 +76,11 @@ class SuperDomain extends ActiveRecord
         ];
     }
 
+    public function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * Gets query for [[Customer]].
      *

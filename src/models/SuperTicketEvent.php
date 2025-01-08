@@ -25,7 +25,7 @@ use yii\helpers\ArrayHelper;
  * @property int|null $created_by Creato da
  * @property int|null $updated_by Aggiornato da
  * @property int|null $deleted_by Cancellato da
- * @property yii\web\User|null $creator
+ * @property SuperUser|null $creator
  *
  * @property SuperTicket $ticket
  * @property SuperUser $superUser
@@ -132,7 +132,7 @@ class SuperTicketEvent extends ActiveRecord
      */
     public function getCreator()
     {
-        return $this->hasOne(Yii::$app->user->identityClass, ['id' => 'created_by']);
+        return $this->hasOne(SuperUser::class, ['user_id' => 'created_by']);
     }
 
     public static function createTicketEvent($ticket_id, $type, $body, $super_user_id = null, $metadata = null)

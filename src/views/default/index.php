@@ -8,7 +8,7 @@ use super\ticket\helpers\TicketHelper;
 
 \super\ticket\assets\EnjoyAsset::register($this);
 ?>
-<h4>Su che Dominio Vuoi Lavorare</h4>
+<h4><?= Yii::t('super', 'Choose Workspace'); ?></h4>
     <div class="row">
 
         <?php foreach (\super\ticket\helpers\DomainHelper::getAvailableDomains() as $availableDomain) : ?>

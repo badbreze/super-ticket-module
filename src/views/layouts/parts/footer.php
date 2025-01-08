@@ -5,6 +5,6 @@
 ?>
 <footer class="footer footer-bar">
     <div class="p-3">
-        <i class="fas fa-signature"></i>
+        <i class="fas fa-signature"></i> [<?= Yii::$app->language; ?>]
     </div>
 </footer>

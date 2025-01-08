@@ -2,7 +2,7 @@
 
 namespace super\ticket\modules\api\models;
 
-use super\ticket\models\SuperAgent;
+use super\ticket\models\SuperUser;
 use Yii;
 
 class SuperTicket extends \super\ticket\models\SuperTicket
@@ -33,9 +33,9 @@ class SuperTicket extends \super\ticket\models\SuperTicket
                                                'name',
                                                'surname',
                                                'email',
-                                               'profile' => function (SuperAgent $model) {
-                                                   return $model->superUser ?
-                                                       $model->superUser->toArray([
+                                               'profile' => function (SuperUser $model) {
+                                                   return $model ?
+                                                       $model->toArray([
                                                                                  'id',
                                                                                  'name',
                                                                                  'surname',

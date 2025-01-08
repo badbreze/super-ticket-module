@@ -32,5 +32,11 @@ class Module extends \yii\base\Module
                 'class' => modules\console\Module::class
             ],
         ];
+
+        \Yii::$app->i18n->translations['super*'] = [
+            'class' => 'yii\i18n\PhpMessageSource',
+            'basePath' => '@vendor/badbreze/super-ticket-system/src/messages/',
+            'sourceLanguage' => 'en-US',
+        ];
     }
 }
