@@ -167,6 +167,7 @@ class SuperTicketEvent extends ActiveRecord
 
             return $event;
         } else {
+            print_r($event->getErrors());
             throw new \Exception('Invalid Event Registration');
         }
 
@@ -210,14 +211,14 @@ class SuperTicketEvent extends ActiveRecord
             ->setFrom($domainMailer->from ?: 'no-reply@super.ticket');
 
         if ($mainRecipient) {
-            $composition->setTo($mainRecipient->superUser->email);
+            $composition->setTo($mainRecipient->email);
         } else {
             Yii::$app->session->addFlash('error', Yii::t('super', 'No Recipients For Notification'));
             return false;
         }
 
         $composition
-            ->setCc(ArrayHelper::map($recipients, 'superUser.email', 'superUser.fullName'))
+            ->setCc(ArrayHelper::map($recipients, 'email', 'fullName'))
             ->setSubject($this->getNotificationSubject());
 
         return $composition->send();
@@ -244,10 +245,9 @@ class SuperTicketEvent extends ActiveRecord
         $exclusions = [$this->super_user_id];
 
         if (!empty($metadata) && isset($metadata['recipients'])) {
-            return SuperTicketFollower::find()
-                ->andWhere(['ticket_id' => $this->ticket_id])
-                ->andWhere(['super_user_id' => $metadata['recipients']])
-                ->andWhere(['not', ['super_user_id' => [$this->super_user_id]]])
+            return SuperUser::find()
+                ->andWhere(['id' => $metadata['recipients']])
+                ->andWhere(['not', ['id' => [$this->super_user_id]]])
                 //->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW])
                 ->all();
         }

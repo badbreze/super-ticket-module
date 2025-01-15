@@ -51,4 +51,10 @@ class StringHelper
             $subject
         );
     }
+
+    public static function splitMailReply($content) {
+        //Specific mail reply splitter
+        $result = preg_split("/-----[^-]/im", $content);
+        return $result;
+    }
 }

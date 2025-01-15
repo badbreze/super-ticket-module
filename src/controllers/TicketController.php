@@ -115,7 +115,7 @@ class TicketController extends Controller
 
         $comment = new TicketCommentForm();
         $comment->ticket_id = $ticket_id;
-        $comment->recipients = ArrayHelper::getColumn($ticket->followers, 'super_user_id');
+        $comment->recipients = ArrayHelper::getColumn($ticket->followers, 'id');
 
         return $this->render('detail', [
             'ticket' => $ticket,

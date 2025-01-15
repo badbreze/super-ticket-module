@@ -105,12 +105,12 @@ use yii\grid\GridView;
                 'encodeLabels' => false,
                 'items' => [
                     [
-                        'label' => Yii::t('models', 'Team Configuration'),
+                        'label' => Yii::t('super', 'Team'),
                         'content' => $this->blocks['main'],
                         'active' => true,
                     ],
                     [
-                        'label' => Yii::t('models', 'Members'),
+                        'label' => Yii::t('super', 'Members'),
                         'content' => $this->blocks['members'],
                         'active' => false,
                     ],

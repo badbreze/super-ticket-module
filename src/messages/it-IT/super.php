@@ -43,4 +43,5 @@ return [
     'Leader Agent' => 'Responsabile',
     'Domain' => 'Contesto',
     'Members' => 'Membri',
+    'Add Recipient' => 'Invita',
 ];

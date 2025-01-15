@@ -4,6 +4,7 @@ namespace super\ticket\modules\console\commands;
 
 use elitedivision\amos\attachments\FileModule;
 use super\ticket\helpers\AttachmentsHelper;
+use super\ticket\helpers\StringHelper;
 use super\ticket\helpers\TicketHelper;
 use super\ticket\helpers\UserHelper;
 use super\ticket\mail\MailSubject;
@@ -81,10 +82,14 @@ class EmailController extends Controller
     public function evaluateMailScope(\PhpImap\IncomingMail $mail, SuperMail $source)
     {
         $refferedToTicket = EmailHelper::getMailTicketReffered($mail);
+
 print_r("\n\n\nEval Scope\n\n");
+
         if ($refferedToTicket->count()) {
+            print_r("\n\n\nCreo Commento da Mail\n\n");
             self::createCommentFromMail($mail, $source);
         } else {
+            print_r("\n\n\nCreo Nuovo Ticket da Mail\n\n");
             self::createTicketFromMail($mail, $source);
         }
 
@@ -101,10 +106,11 @@ print_r("\n\n\nEval Scope\n\n");
         $followers = UserHelper::getUsersFromContactsArray($source->domain_id, $followerContacts);
 
         $subject = new MailSubject(['subject' => $mail->subject]);
+        $contentParts = StringHelper::splitMailReply($mail->textHtml ?: $mail->textPlain);
 
         $newTicket = new SuperTicket([
             'subject' => $subject->subject ?: 'Support',
-            'content' => $mail->textHtml ?: $mail->textPlain,
+            'content' => $contentParts[0],
             'status_id' => $source->status_id,
             'priority_id' => $source->priority_id,
             'agent_id' => $source->agent_id,
@@ -129,6 +135,8 @@ print_r("\n\n\nEval Scope\n\n");
             print_r($newTicket->getErrors());
             throw new Exception("Cant Save the new Ticket\n");
         }
+
+        //Notify Assignee
 
         //Store Original EML
         //$mail->
@@ -165,11 +173,12 @@ print_r("\n\n\nEval Scope\n\n");
 
         $relatedMailQ = EmailHelper::getTicketMatchesQuery($mail);
         $relatedMail = $relatedMailQ->one();
+        $contentParts = StringHelper::splitMailReply($mail->textHtml ?: $mail->textPlain);
 
         $comment = SuperTicketEvent::createTicketEvent(
             $relatedMail->id,
             SuperTicketEvent::TYPE_COMMENT,
-            $mail->textHtml ?: $mail->textPlain,
+            $contentParts[0],
             $owner->id
         );
 

@@ -53,7 +53,8 @@ use yii\helpers\ArrayHelper;
  * @property SuperTicketStatus[] $availableStatuses
  * @property SuperTicketPriority[] $availablePriorities
  * @property SuperUser[] $availableAssignees
- * @property SuperTicketFollower[] $followers
+ * @property SuperTicketFollower[] $ticketFollowers
+ * @property SuperUser[] $followers
  * @property SuperUser[] $followable
  * @property File[] $attachments
  * @property bool $isDueDateElapsed
@@ -249,6 +250,20 @@ class SuperTicket extends ActiveRecord
     }
 
     /**
+     * Gets query for [[SuperUser]].
+     *
+     * @param $exclusions integer|array users to exclude
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTicketFollowers($exclusions = 0)
+    {
+        return $this
+            ->hasMany(SuperTicketFollower::className(), ['ticket_id' => 'id'])
+            ->andOnCondition(['not', ['super_user_id' => $exclusions]])
+            ->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
+    }
+
+    /**
      * Gets query for [[SuperTicketEvents]].
      *
      * @param $exclusions integer|array users to exclude
@@ -257,9 +272,9 @@ class SuperTicket extends ActiveRecord
     public function getFollowers($exclusions = 0)
     {
         return $this
-            ->hasMany(SuperTicketFollower::className(), ['ticket_id' => 'id'])
-            ->andOnCondition(['not', ['super_user_id' => $exclusions]])
-            ->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
+            ->hasMany(SuperUser::className(), ['id' => 'super_user_id'])
+            ->via('ticketFollowers')
+            ->andOnCondition(['not', ['id' => $exclusions]]);
     }
 
     /**
@@ -281,7 +296,7 @@ class SuperTicket extends ActiveRecord
 
         $q->andWhere([
             'OR',
-            ['id' => $this->getFollowers()->select('super_user_id')],
+            ['id' => $this->getTicketFollowers()->select('super_user_id')],
             ['domain_id' => $this->domain_id]
         ]);
 

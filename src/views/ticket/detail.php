@@ -96,7 +96,7 @@ $statuses = StatusHelper::getAvailableStatuses();
                 </div>
                 <a href="#" class="col mt-4" data-toggle="modal" data-target="#recipient-modal">
                     <i class="fa fa-plus"></i>
-                    <?= Yii::t('super', 'Add recipient'); ?>
+                    <?= Yii::t('super', 'Add Recipient'); ?>
                 </a>
             </div>
 

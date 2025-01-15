@@ -50,7 +50,7 @@ use super\ticket\models\SuperMail;
 
 
             <!-- attribute name -->
-            <?= $form->field($model, 'password')->textInput(['maxlength' => true]) ?>
+            <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
 
 
             <!-- attribute name -->
