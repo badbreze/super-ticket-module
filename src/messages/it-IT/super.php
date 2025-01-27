@@ -4,6 +4,7 @@ return [
     'ticket_activity_comment' => 'Nuovo Commento al Ticket',
     'Opened by <code>{name}</code> in {date}' => 'Aperto da <code>{name}</code> in data {date}',
     'In {date} <code>{name}</code> wrote' => 'Il {date} <code>{name}</code> ha scritto',
+    'assigned to {user}' => 'Ticket assegnato a {user}',
     'Marked as {status}' => 'Marcata come {status}',
     'Write a Comment' => 'Scrivi un commento',
     'Ticket Details' => 'Dettagli Ticket',

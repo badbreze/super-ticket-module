@@ -38,6 +38,7 @@ class SuperTicketEvent extends ActiveRecord
     const TYPE_PRIORITY = 'priority';
     const TYPE_COMMENT = 'comment';
     const TYPE_ASSIGNEE = 'assignee';
+    const TYPE_OPENING = 'opening';
 
     /**
      * {@inheritdoc}
