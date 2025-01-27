@@ -244,15 +244,21 @@ class SuperTicketEvent extends ActiveRecord
 
         $exclusions = [$this->super_user_id];
 
+        $fetchers = SuperMail::find()->select('address');
+
         if (!empty($metadata) && isset($metadata['recipients'])) {
             return SuperUser::find()
                 ->andWhere(['id' => $metadata['recipients']])
                 ->andWhere(['not', ['id' => [$this->super_user_id]]])
+                ->andWhere(['not', ['email' => $fetchers]])
                 //->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW])
                 ->all();
         }
 
-        return $this->ticket->getFollowers($exclusions)->all();
+        return $this->ticket
+            ->getFollowers($exclusions)
+            ->andWhere(['not', ['email' => $fetchers]])
+            ->all();
     }
 
     public function getPrevious($type = 'comment')
