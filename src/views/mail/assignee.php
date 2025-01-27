@@ -13,3 +13,8 @@ use super\ticket\models\SuperTicketEvent;
 <?php if ($event->creator) : ?>
     <?= Yii::t('super', 'by {user}', ['user' => $event->creator->fullName]); ?>
 <?php endif; ?>
+<hr/>
+<?= Yii::t('super', 'Ticket'); ?>:
+<a href="<?= \super\ticket\helpers\RouteHelper::toTicket($event->ticket_id); ?>">
+    <?= $event->ticket->subject ?>
+</a>

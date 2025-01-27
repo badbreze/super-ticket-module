@@ -170,7 +170,7 @@ a.active {
 
 .card {
     background-color: rgba(255,255,0255,0.05);
-    border: 1px solid #fbfbfb;
+    /*border: 1px solid #fbfbfb;*/
     transition: box-shadow 0.4s ease-in-out;
 }
 

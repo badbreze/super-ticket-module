@@ -9,26 +9,30 @@ use super\ticket\helpers\TicketHelper;
 \super\ticket\assets\EnjoyAsset::register($this);
 ?>
 <h4><?= Yii::t('super', 'Choose Workspace'); ?></h4>
-    <div class="row">
+    <div class="row pb-4">
 
         <?php foreach (\super\ticket\helpers\DomainHelper::getAvailableDomains() as $availableDomain) : ?>
         <div class="col-lg-3 d-flex grid-margin stretch-card">
             <div class="card sale-diffrence-border">
                 <div class="card-body">
-                    <h2 class="text-dark mb-2 font-weight-bold">
-                        <span class="text-danger font-weight-bold">
-                            <i class="mdi mdi-alert-box"></i>
-                            <?= $availableDomain->getNewTickets()->count(); ?>
-                        </span>
-                        <span class="text-success font-weight-bold">
-                            <i class="mdi mdi-check"></i>
-                            <?= $availableDomain->getResolvedTickets()->count(); ?>
-                        </span>
-                    </h2>
                     <h4 class="card-title mb-2">
                         <a href="<?= TicketHelper::getListUrl(null,$availableDomain->id); ?>"><?= $availableDomain->name; ?></a>
                     </h4>
                     <small class="text-muted"><?= $availableDomain->customer->name; ?></small>
+                </div>
+                <div class="card-footer border-info">
+                    <a class="btn btn-danger font-weight-bold"
+                       href="<?= TicketHelper::getListUrl(\super\ticket\models\SuperTicketStatus::STATUS_OPEN,$availableDomain->id); ?>"
+                    >
+                        <i class="mdi mdi-alert-box"></i>
+                        New <?= $availableDomain->getNewTickets()->count(); ?>
+                    </a>
+                    <a class="btn btn-success font-weight-bold"
+                       href="<?= TicketHelper::getListUrl(\super\ticket\models\SuperTicketStatus::STATUS_RESOLVED,$availableDomain->id); ?>"
+                    >
+                        <i class="mdi mdi-check"></i>
+                        Resolved <?= $availableDomain->getResolvedTickets()->count(); ?>
+                    </a>
                 </div>
             </div>
         </div>
