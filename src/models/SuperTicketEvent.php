@@ -9,6 +9,7 @@ use Yii;
 use yii\base\Exception;
 use super\ticket\mail\Mailer;
 use yii\helpers\ArrayHelper;
+use yii\web\Application;
 
 /**
  * This is the model class for table "{{%super_ticket_event}}".
@@ -161,7 +162,7 @@ class SuperTicketEvent extends ActiveRecord
                 }
             }
 
-            if (in_array($type, [self::TYPE_COMMENT/*, self::TYPE_STATUS_CHANGE*/])) {
+            if (in_array($type, [self::TYPE_COMMENT, self::TYPE_ASSIGNEE/*, self::TYPE_STATUS_CHANGE*/])) {
                 $event->sendNotification();
             }
 
@@ -212,9 +213,11 @@ class SuperTicketEvent extends ActiveRecord
 
         if ($mainRecipient) {
             $composition->setTo($mainRecipient->email);
-        } else {
+        } elseif (Yii::$app instanceof Application) {
             Yii::$app->session->addFlash('error', Yii::t('super', 'No Recipients For Notification'));
             return false;
+        } else {
+            throw new \Exception('No Recipients For Notification of ticket: ' . $this->ticket->id);
         }
 
         $composition
@@ -247,12 +250,14 @@ class SuperTicketEvent extends ActiveRecord
         $fetchers = SuperMail::find()->select('address');
 
         if (!empty($metadata) && isset($metadata['recipients'])) {
-            return SuperUser::find()
+            $rq = SuperUser::find()
                 ->andWhere(['id' => $metadata['recipients']])
-                ->andWhere(['not', ['id' => [$this->super_user_id]]])
-                ->andWhere(['not', ['email' => $fetchers]])
-                //->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW])
-                ->all();
+                ->andWhere(['not', ['id' => $exclusions]])
+                ->andWhere(['not', ['email' => $fetchers]]);
+            //->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
+
+            if ($rq->count())
+                return $rq->all();
         }
 
         return $this->ticket

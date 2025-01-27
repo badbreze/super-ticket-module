@@ -107,13 +107,14 @@ print_r("\n\n\nEval Scope\n\n");
 
         $subject = new MailSubject(['subject' => $mail->subject]);
         $contentParts = StringHelper::splitMailReply($mail->textHtml ?: $mail->textPlain);
-
+        //echo "CONTENT PARTS\n";
+//print_r($contentParts);
         $newTicket = new SuperTicket([
             'subject' => $subject->subject ?: 'Support',
-            'content' => $contentParts[0],
+            'content' => $contentParts[0] ?: $contentParts[1],
             'status_id' => $source->status_id,
             'priority_id' => $source->priority_id,
-            'agent_id' => $source->agent_id,
+            //'agent_id' => $source->agent_id,
             'source_id' => $source->id,
             'source_type' => SuperTicket::SOURCE_MAIL,
             'team_id' => $source->team_id,
@@ -121,6 +122,7 @@ print_r("\n\n\nEval Scope\n\n");
             'super_user_id' => $owner->id,
             'metadata' => serialize($mail)
         ]);
+
 
         //Calculate Due Date
         $newTicket->due_date = $newTicket->calculateDueDate();
@@ -137,6 +139,7 @@ print_r("\n\n\nEval Scope\n\n");
         }
 
         //Notify Assignee
+        $newTicket->updateAssignee($source->agent_id);
 
         //Store Original EML
         //$mail->

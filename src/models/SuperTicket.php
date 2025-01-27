@@ -392,7 +392,10 @@ class SuperTicket extends ActiveRecord
         $this->addEvent(
             SuperTicketEvent::TYPE_ASSIGNEE,
             Yii::t('super', 'assigned to {user}', ['user' => $this->agent->fullName]),
-            $this->agent->id
+            $this->agent->id,
+            [
+                'recipients' => $this->agent->id
+            ]
         );
 
         return $this->save(false);
