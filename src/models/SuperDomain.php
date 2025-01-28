@@ -143,6 +143,12 @@ class SuperDomain extends ActiveRecord
             ->andWhere(['status_id' => 2]);
     }
 
+    public function getClosedTickets()
+    {
+        return $this->hasMany(SuperTicket::className(), ['domain_id' => 'id'])
+            ->andWhere(['status_id' => 3]);
+    }
+
     public function getMailer() {
         return $this->hasOne(SuperMailer::className(), ['domain_id' => 'id']);
     }

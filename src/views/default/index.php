@@ -25,13 +25,15 @@ use super\ticket\helpers\TicketHelper;
                        href="<?= TicketHelper::getListUrl(\super\ticket\models\SuperTicketStatus::STATUS_OPEN,$availableDomain->id); ?>"
                     >
                         <i class="mdi mdi-alert-box"></i>
-                        New <?= $availableDomain->getNewTickets()->count(); ?>
+                        <?= $availableDomain->getNewTickets()->count(); ?>
+                        <?= Yii::t('super', 'New'); ?>
                     </a>
                     <a class="btn btn-success font-weight-bold"
-                       href="<?= TicketHelper::getListUrl(\super\ticket\models\SuperTicketStatus::STATUS_RESOLVED,$availableDomain->id); ?>"
+                       href="<?= TicketHelper::getListUrl(\super\ticket\models\SuperTicketStatus::STATUS_CLOSED,$availableDomain->id); ?>"
                     >
                         <i class="mdi mdi-check"></i>
-                        Resolved <?= $availableDomain->getResolvedTickets()->count(); ?>
+                        <?= $availableDomain->getClosedTickets()->count(); ?>
+                        <?= Yii::t('super', 'Closed'); ?>
                     </a>
                 </div>
             </div>

@@ -114,7 +114,7 @@ print_r("\n\n\nEval Scope\n\n");
             'content' => $contentParts[0] ?: $contentParts[1],
             'status_id' => $source->status_id,
             'priority_id' => $source->priority_id,
-            //'agent_id' => $source->agent_id,
+            'agent_id' => $source->agent_id,
             'source_id' => $source->id,
             'source_type' => SuperTicket::SOURCE_MAIL,
             'team_id' => $source->team_id,

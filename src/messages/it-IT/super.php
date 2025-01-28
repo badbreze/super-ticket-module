@@ -19,6 +19,7 @@ return [
     'Open' => 'Aperto',
     'Resolved' => 'Risolto',
     'Closed' => 'Chiuso',
+    'New' => 'Nuovi',
     'Wait' => 'In Attesa',
     'Suspended' => 'Sospeso',
     'Author' => 'Autore',

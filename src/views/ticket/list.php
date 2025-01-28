@@ -15,6 +15,20 @@ use yii\helpers\Html;
 <div class="row g-0">
     <?= $this->render('../parts/navigator'); ?>
     <div class="col-sm-10 p-4">
+
+
+        <div class="nav-item dropdown dropleft float-right">
+            <a href="#" class="btn btn-outline-dark" data-toggle="dropdown">
+                <i class="fas fa-ellipsis-h"></i>
+            </a>
+
+            <div class="dropdown-menu shadow-sm border-0" style="text-align: center">
+                <a class="dropdown-item" href="#" title="esci" data-method="post" tabindex="-1">
+                   Elimina
+                </a>
+            </div>
+        </div>
+
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'layout' => "{summary}\n{pager}\n{items}\n{pager}",
@@ -26,10 +40,10 @@ use yii\helpers\Html;
             ],
             'tableOptions' => ['class' => 'table table-hover table-hover ticket-list'],
             'headerRowOptions' => ['class' => 'x'],
-            'rowOptions' => function($model, $key, $index, $grid) {
-            /**@var $model \super\ticket\models\SuperTicket **/
-                if(
-                        $model->isDueDateElapsed &&
+            'rowOptions' => function ($model, $key, $index, $grid) {
+                /**@var $model \super\ticket\models\SuperTicket * */
+                if (
+                    $model->isDueDateElapsed &&
                     $model->status->identifier == \super\ticket\models\SuperTicketStatus::STATUS_OPEN
                 ) {
                     return ['class' => 'bg-expired'];
