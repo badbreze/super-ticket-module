@@ -139,7 +139,7 @@ print_r("\n\n\nEval Scope\n\n");
         }
 
         //Notify Assignee
-        $newTicket->updateAssignee($source->agent_id);
+        //$newTicket->updateAssignee($source->agent_id);
 
         //Store Original EML
         //$mail->
