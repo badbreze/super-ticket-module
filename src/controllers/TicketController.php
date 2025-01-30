@@ -5,10 +5,12 @@ namespace super\ticket\controllers;
 use super\ticket\base\Controller;
 use super\ticket\helpers\RouteHelper;
 use super\ticket\helpers\TicketHelper;
+use super\ticket\helpers\UserHelper;
 use super\ticket\models\forms\TicketCommentForm;
 use super\ticket\models\SuperDomain;
 use super\ticket\models\SuperTicket;
 use super\ticket\models\SuperTicketEvent;
+use super\ticket\models\SuperTicketFollower;
 use super\ticket\models\SuperUser;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -216,6 +218,18 @@ class TicketController extends Controller
             'model' => $model,
             'ticket' => $ticket,
         ]);
+    }
+
+    public function actionToggleFollow($ticket_id) {
+        $ticket = SuperTicket::findOne(['id' => $ticket_id]);
+
+        if (!$ticket) {
+            return $this->redirect(RouteHelper::toTicket($ticket_id));
+        }
+
+        SuperTicketFollower::toggleFollow($ticket_id, UserHelper::getCurrentUser()->id);
+
+        return $this->redirect(RouteHelper::toTicket($ticket_id));
     }
 
 }

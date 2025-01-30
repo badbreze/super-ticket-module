@@ -34,7 +34,10 @@ class EmailController extends Controller
     {
         $mailSourcesQuery = SuperMail::find();
 
+        $time = microtime();
+
         //Debug
+        Console::stdout("SF {$time}\n");
         Console::stdout("Found {$mailSourcesQuery->count()} Mail Sources\n");
 
         foreach ($mailSourcesQuery->all() as $mailSource) {
@@ -46,6 +49,9 @@ class EmailController extends Controller
                 Console::stdout("Unable To Process Mailbox: {$e->getMessage()}\n");
             }
         }
+
+        //Debug
+        Console::stdout("EF {$time}\n");
     }
 
     public function processMailBox(SuperMail $source)
@@ -54,8 +60,18 @@ class EmailController extends Controller
             'connection' => EmailHelper::getMailBoxConnection($source)
         ]);
 
+        $time = microtime();
+
+        //Debug
+        Console::stdout("SS: {$time}\n");
+        Console::stdout("Found: {$mailbox->count} mails\n");
+
         foreach ($mailbox->mailIds as $mail_id) {
             $mail = $mailbox->getMailById($mail_id);
+
+            //Debug
+            Console::stdout("Process: {$mail_id}\n");
+            Console::stdout("Subject: {$mail->subject}\n");
 
             $transaction = \Yii::$app->db->beginTransaction();
 
@@ -77,19 +93,22 @@ class EmailController extends Controller
 
             Console::stdout("Mail parsed successiful: {$mail_id}\n");
         }
+
+        //Debug
+        Console::stdout("ES: {$time}\n");
     }
 
     public function evaluateMailScope(\PhpImap\IncomingMail $mail, SuperMail $source)
     {
         $refferedToTicket = EmailHelper::getMailTicketReffered($mail);
 
-print_r("\n\n\nEval Scope\n\n");
+        print_r("\nChoosing Mail Scope...\n");
 
         if ($refferedToTicket->count()) {
-            print_r("\n\n\nCreo Commento da Mail\n\n");
+            print_r("\nCreo Commento da Mail\n");
             self::createCommentFromMail($mail, $source);
         } else {
-            print_r("\n\n\nCreo Nuovo Ticket da Mail\n\n");
+            print_r("\nCreo Nuovo Ticket da Mail\n");
             self::createTicketFromMail($mail, $source);
         }
 
@@ -107,8 +126,7 @@ print_r("\n\n\nEval Scope\n\n");
 
         $subject = new MailSubject(['subject' => $mail->subject]);
         $contentParts = StringHelper::splitMailReply($mail->textHtml ?: $mail->textPlain);
-        //echo "CONTENT PARTS\n";
-//print_r($contentParts);
+
         $newTicket = new SuperTicket([
             'subject' => $subject->subject ?: 'Support',
             'content' => $contentParts[0] ?: $contentParts[1],
@@ -139,7 +157,7 @@ print_r("\n\n\nEval Scope\n\n");
         }
 
         //Notify Assignee
-        //$newTicket->updateAssignee($source->agent_id);
+        $newTicket->updateAssignee($source->agent_id);
 
         //Store Original EML
         //$mail->
@@ -153,6 +171,9 @@ print_r("\n\n\nEval Scope\n\n");
 
         //Opener Follows His Own Ticket
         SuperTicketFollower::follow($newTicket->id, $owner->id);
+
+        //Agent follows ticket
+        SuperTicketFollower::follow($newTicket->id, $newTicket->agent_id);
 
         //Link all related tickets
         foreach ($relatedTickets as $relatedTicket) {

@@ -164,7 +164,7 @@ class SuperTicketEvent extends ActiveRecord
             }
 
             if (in_array($type, [self::TYPE_COMMENT, self::TYPE_ASSIGNEE/*, self::TYPE_STATUS_CHANGE*/])) {
-                $event->sendNotification();
+                $event->scheduleNotification();
             }
 
             return $event;
@@ -176,69 +176,18 @@ class SuperTicketEvent extends ActiveRecord
         //VOID
     }
 
-    public function sendNotification()
-    {
-        $domainMailer = $this->ticket->domain->mailer;
-
-        if ($domainMailer && $domainMailer->enabled) {
-            $mailer = new Mailer([
-                'useFileTransport' => false,
-                'transport' => [
-                    'class' => 'Swift_SmtpTransport',
-                    'host' => $domainMailer->host,
-                    'username' => $domainMailer->username,
-                    'password' => $domainMailer->password,
-                    'port' => $domainMailer->port,
-                    'encryption' => $domainMailer->encryption,
-                ],
-                'messageConfig' => [
-                    'priority' => 3    // 1 MAX 3 NORMAL 5 LOWER
-                ],
-            ]);
-        } else {
-            throw new Exception('Mailer Not Configured for this Domain');
-        }
-
-        //Override Layout for template usage
-        $mailer->htmlLayout = "@vendor/badbreze/super-ticket-system/src/views/mail/layouts/html";
-
-        $recipients = $this->getRecipients();
-        $mainRecipient = reset($recipients);
-        unset($recipients[0]);
-
-        $composition = $mailer
-            ->compose("@vendor/badbreze/super-ticket-system/src/views/mail/{$this->type}", [
-                'event' => $this
-            ])
-            ->setFrom($domainMailer->from ?: 'no-reply@super.ticket');
-
-        if ($mainRecipient) {
-            $composition->setTo($mainRecipient->email);
-        } elseif (Yii::$app instanceof Application) {
-            Yii::$app->session->addFlash('error', Yii::t('super', 'No Recipients For Notification'));
-            return false;
-        } else {
-            throw new \Exception('No Recipients For Notification of ticket: ' . $this->ticket->id);
-        }
-
-        $composition
-            ->setCc(ArrayHelper::map($recipients, 'email', 'fullName'))
-            ->setSubject($this->getNotificationSubject());
-
-        return $composition->send();
-    }
-
-    //TODO da finalizzare, scritto così è nammerda
-    public function getNotificationSubject()
-    {
-        $subject = "[#T{$this->ticket_id}] - ";
-        $subject .= Yii::t('super', "ticket_activity_{$this->type}", [
-            'id' => $this->ticket_id,
-            'subject' => $this->ticket->subject,
-            'type' => $this->type,
+    public function scheduleNotification() {
+        //TODO
+        $notification = new SuperTicketEventNotification([
+            'event_id' => $this->id,
+            'status' => SuperTicketEventNotification::STATUS_PENDING
         ]);
 
-        return $subject;
+        if(!$notification->save()) {
+            throw new \Exception('Invalid Event Notification Registration');
+        }
+
+        return true;
     }
 
     public function getRecipients()
@@ -246,7 +195,7 @@ class SuperTicketEvent extends ActiveRecord
         //metadata used for special functions like custom recipients
         $metadata = !empty($this->metadata) ? json_decode($this->metadata, true) : [];
 
-        $exclusions = [$this->super_user_id];
+        $exclusions = [$this->creator->id ?: $this->super_user_id];
 
         $fetchers = SuperMail::find()->select('address');
 
@@ -256,6 +205,8 @@ class SuperTicketEvent extends ActiveRecord
                 ->andWhere(['not', ['id' => $exclusions]])
                 ->andWhere(['not', ['email' => $fetchers]]);
             //->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
+
+            //print_r($rq->createCommand()->rawSql);
 
             if ($rq->count())
                 return $rq->all();

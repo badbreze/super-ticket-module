@@ -2,18 +2,7 @@
 
 namespace super\ticket\modules\console\commands;
 
-use elitedivision\amos\attachments\FileModule;
-use super\ticket\helpers\AttachmentsHelper;
-use super\ticket\helpers\UserHelper;
-use super\ticket\mail\MailSubject;
-use super\ticket\models\SuperMail;
 use super\ticket\models\SuperTicket;
-use super\ticket\models\SuperTicketEvent;
-use super\ticket\models\SuperTicketFollower;
-use super\ticket\models\SuperTicketLink;
-use super\ticket\modules\console\base\MailBox;
-use super\ticket\modules\console\helpers\EmailHelper;
-use yii\base\Exception;
 use yii\console\Controller;
 use yii\helpers\Console;
 

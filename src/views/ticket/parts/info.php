@@ -17,8 +17,10 @@ $statuses = StatusHelper::getAvailableStatuses();
 <div class="col-sm-2 grid-margin p-0">
     <div class="ticket-sidebar p-3 h-100">
         <h5 class="mb-4">
-            <i class="fas fa-wind"></i>
             <?= Yii::t('super', 'Ticket Details'); ?>
+            <a class="float-right" href="<?= \yii\helpers\Url::to(['/super/ticket/toggle-follow', 'ticket_id' => $ticket->id]); ?>">
+                <i class="fas <?= \super\ticket\helpers\TicketHelper::amIFollowing($ticket) ? 'fa-bell-slash' : 'fa-bell'; ?>"></i>
+            </a>
         </h5>
         <div class="mb-2">
             <b>

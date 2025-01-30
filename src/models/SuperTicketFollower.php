@@ -4,6 +4,7 @@ namespace super\ticket\models;
 
 use super\ticket\db\ActiveRecord;
 use Yii;
+use yii\base\Exception;
 
 /**
  *
@@ -142,6 +143,11 @@ class SuperTicketFollower extends ActiveRecord
                                 ]);
 
         if($follow) {
+            if($follow->status != self::STATUS_FOLLOW) {
+                $follow->status = self::STATUS_FOLLOW;
+                $follow->save();
+            }
+
             return $follow;
         }
 
@@ -152,5 +158,59 @@ class SuperTicketFollower extends ActiveRecord
         $new->save();
 
         return $new;
+    }
+
+    /**
+     * @param $ticket_id
+     * @param $super_user_id
+     * @return true
+     */
+    public static function unfollow($ticket_id, $super_user_id) {
+        $follow = self::findOne([
+            'ticket_id' => $ticket_id,
+            'super_user_id' => $super_user_id
+        ]);
+
+        if($follow) {
+            $follow->status = self::STATUS_UNFOLLOW;
+            $follow->save();
+        }
+
+        return true;
+    }
+
+    /**
+     * @param $ticket_id
+     * @param $super_user_id
+     * @return true
+     * @throws Exception
+     */
+    public static function toggleFollow($ticket_id, $super_user_id) {
+        $ticket = SuperTicket::findOne($ticket_id);
+
+        if(!$ticket) {
+            throw new Exception('Ticket Not Found');
+        }
+
+        $follow = self::findOne([
+            'ticket_id' => $ticket_id,
+            'super_user_id' => $super_user_id
+        ]);
+
+        if(!$follow) {
+            $new = new SuperTicketFollower();
+            $new->super_user_id = $super_user_id;
+            $new->ticket_id = $ticket_id;
+            $new->status = self::STATUS_FOLLOW;
+            $new->save();
+        } elseif ($follow->status == self::STATUS_FOLLOW) {
+            $follow->status = self::STATUS_UNFOLLOW;
+            $follow->save();
+        } else {
+            $follow->status = self::STATUS_FOLLOW;
+            $follow->save();
+        }
+
+        return true;
     }
 }

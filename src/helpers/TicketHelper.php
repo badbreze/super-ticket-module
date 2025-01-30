@@ -35,4 +35,13 @@ class TicketHelper
     public static function getTicketDetailUrl(SuperTicket $ticket) {
         return RouteHelper::toTicket($ticket->id, $ticket->domain_id);
     }
+
+    public static function amIFollowing(SuperTicket $ticket) {
+        $user = UserHelper::getCurrentUser();
+
+        $q = $ticket->getTicketFollowers()
+            ->andWhere(['super_ticket_follower.super_user_id' => $user->id]);
+
+        return $q->count() > 0;
+    }
 }

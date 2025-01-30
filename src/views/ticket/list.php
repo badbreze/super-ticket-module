@@ -37,6 +37,7 @@ use yii\helpers\Html;
                 'firstPageLabel' => Yii::t('app', 'First'),
                 'lastPageLabel' => Yii::t('app', 'Last'),
                 'options' => ['class' => 'pagination ticket-pager'],
+                'hideOnSinglePage' => false
             ],
             'tableOptions' => ['class' => 'table table-hover table-hover ticket-list'],
             'headerRowOptions' => ['class' => 'x'],

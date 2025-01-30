@@ -8,18 +8,26 @@ use yii\db\Exception;
 class UserHelper
 {
     /**
+     * Get the current SuperUser profile
+     * @return array|\yii\db\ActiveRecord|null
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function getCurrentUser()
+    {
+        $query = SuperUser::find()
+            ->andWhere(['user_id' => \Yii::$app->user->id]);
+
+        return $query->one();
+    }
+
+    /**
      * Check if the current logged use is available on super ticket system
      * @return mixed|null
      * @throws \yii\base\InvalidConfigException
      */
     public static function isCurrentUserAvailable()
     {
-        $query = SuperUser::find()
-            ->andWhere(['user_id' => \Yii::$app->user->id]);
-
-        $user = $query->one();
-
-        return $user->id;
+        return self::getCurrentUser()->id;
     }
 
     public static function parseAndGetUser($domain_id, $name, $surname = null, $email = null, $phone = null)

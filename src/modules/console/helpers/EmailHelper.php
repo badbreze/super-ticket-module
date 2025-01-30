@@ -156,8 +156,6 @@ class EmailHelper
     public static function getThreadTicketReffered(\PhpImap\IncomingMail $mail, $ignoreClosed = true) {
         $q = self::getTicketMatchesQuery($mail, $ignoreClosed);
 
-        print_r($mail->headers);
-
         //TODO need a decision on how to manage this situation
         /*if ($q->count() > 1)
             throw new \Exception('Unexpected Number of Tickets on the Same Subject/user');*/
