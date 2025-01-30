@@ -73,7 +73,7 @@ class EmailController extends Controller
             Console::stdout("Process: {$mail_id}\n");
             Console::stdout("Subject: {$mail->subject}\n");
 
-            $transaction = \Yii::$app->db->beginTransaction();
+            //$transaction = \Yii::$app->db->beginTransaction();
 
             try {
                 self::evaluateMailScope($mail, $source);
@@ -83,12 +83,12 @@ class EmailController extends Controller
                     throw new Exception("Unable to move the mail to the new box\n");
                 }
 
-                $transaction->commit();
+                //$transaction->commit();
             } catch (\Exception $e) {
                 Console::stdout("Unable to complete mail processing: {$e->getMessage()}");
                 Console::stdout($e->getTraceAsString());
 
-                $transaction->rollBack();
+                //$transaction->rollBack();
             }
 
             Console::stdout("Mail parsed successiful: {$mail_id}\n");
