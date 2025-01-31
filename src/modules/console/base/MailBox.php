@@ -97,7 +97,7 @@ class MailBox extends \yii\base\BaseObject
         $mailBoxes = $this->connection->getMailboxes($boxPath);
 
         if (count($mailBoxes) == 0) {
-            Console::stdout("Creating mailbox {$box}");
+            Console::stdout("Creating mailbox {$box}\n");
             $this->connection->createMailbox($box);
 
             $mailBoxes = $this->connection->getMailboxes($boxPath);

@@ -4,6 +4,7 @@ namespace super\ticket\models;
 
 use luya\admin\ngrest\plugins\Datetime;
 use super\ticket\db\ActiveRecord;
+use super\ticket\helpers\DateTimeHelper;
 use Yii;
 
 /**
@@ -88,6 +89,11 @@ class SuperTicketSlaSchedule extends ActiveRecord
             ->where(['day_of_week' => $dow]);
     }
 
+    /**
+     * @param \DateTime $date
+     * @return \yii\db\ActiveQuery
+     * @throws \yii\base\InvalidConfigException
+     */
     public function getHolidaysByDateTime(\DateTime $date) {
         $day = $date->format('j');
         $month = $date->format('n');
@@ -107,7 +113,11 @@ class SuperTicketSlaSchedule extends ActiveRecord
             $holidays = $this->getHolidaysByDateTime($date)->one();
 
             if ($entry && !$holidays) {
-                return $date;
+                $inWorkHour = DateTimeHelper::compareTimeOnly($entry->getEndHour(), $date);
+
+                if($inWorkHour == '+') {
+                    return $date;
+                }
             }
 
             $date->modify('+1 day');

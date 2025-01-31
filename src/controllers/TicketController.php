@@ -111,6 +111,34 @@ class TicketController extends Controller
         ]);
     }
 
+    public function actionMyTickets($domain_id) {
+        Url::remember();
+
+        $tickets = SuperTicket::find()
+            ->joinWith('team')
+            ->joinWith('status')
+            ->joinWith('ticketFollowers')
+            //->orderBy(['super_ticket.due_date' => SORT_ASC])
+            ->andWhere(['super_ticket_follower.super_user_id' => UserHelper::getCurrentUser()->id])
+            ->andWhere(['super_ticket.domain_id' => $domain_id]);
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $tickets,
+            'sort' => [
+                'defaultOrder' => [
+                    'due_date' => SORT_ASC,
+                    'created_at' => SORT_DESC
+                ]
+            ],
+        ]);
+
+        //$dataProvider->pagination->setPageSize(20);
+
+        return $this->render('list', [
+            'dataProvider' => $dataProvider
+        ]);
+    }
+
     public function actionDetail($ticket_id)
     {
         $ticket = SuperTicket::find()->andWhere(['id' => $ticket_id])->one();

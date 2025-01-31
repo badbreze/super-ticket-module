@@ -57,19 +57,10 @@ use yii\helpers\Html;
                 ],
                 [
                     'class' => \yii\grid\DataColumn::class, // this line is optional
-                    'attribute' => 'superUser',
-                    'format' => 'raw',
-                    'value' => function ($model) {
-                        return Yii::$app->view->render('parts/grid_user', ['model' => $model->superUser]);
-                    },
-                    'label' => Yii::t('super', 'Author'),
-                ],
-                [
-                    'class' => \yii\grid\DataColumn::class, // this line is optional
                     'attribute' => 'subject',
                     'format' => 'raw',
                     'value' => function ($model) {
-                        return Html::a($model->subject, RouteHelper::toTicket($model->id)); // your url here
+                        return Yii::$app->view->render('parts/grid_subject', ['model' => $model]);
                     },
                     'label' => Yii::t('super', 'Subject'),
                 ],
@@ -106,7 +97,7 @@ use yii\helpers\Html;
                     'format' => 'text',
                     'label' => Yii::t('super', 'Last Update'),
                 ],
-                [
+                /*[
                     'class' => \yii\grid\DataColumn::class, // this line is optional
                     'attribute' => 'comments',
                     'format' => 'raw',
@@ -114,7 +105,7 @@ use yii\helpers\Html;
                         return $model->getComments()->count(); // your url here
                     },
                     'label' => Yii::t('super', 'Comments'),
-                ],
+                ],*/
             ]
         ]); ?>
     </div>

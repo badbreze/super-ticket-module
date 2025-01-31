@@ -14,7 +14,7 @@ class TicketController extends Controller
     public function actionIndex()
     {
         //Debug
-        Console::stdout("Doing Things\n");
+        print_r("Doing Things\n");
     }
 
     public function actionFixDueDate()

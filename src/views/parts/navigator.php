@@ -43,5 +43,17 @@ $currentStatus = StatusHelper::getCurrentStatus();
                 <?php endforeach; ?>
             </div>
         </div>
+        <div class="row mb-4">
+            <div class="col">
+                <h6 class=""><?= Yii::t('super', 'More'); ?></h6>
+
+                <p>
+                    <a class="<?= $status->identifier == $currentStatus->identifier ? 'active' : ''; ?>" href="<?= RouteHelper::toFollowed($currentDomain->id); ?>">
+                        <i class="fa fa-angle-right"></i>
+                        <?= Yii::t('super', "Followed"); ?>
+                    </a>
+                </p>
+            </div>
+        </div>
     </div>
 </div>

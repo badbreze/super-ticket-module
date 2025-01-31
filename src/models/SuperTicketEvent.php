@@ -5,6 +5,7 @@ namespace super\ticket\models;
 use elitedivision\amos\attachments\behaviors\FileBehavior;
 use elitedivision\amos\attachments\models\File;
 use super\ticket\db\ActiveRecord;
+use super\ticket\helpers\UserHelper;
 use Yii;
 use yii\base\Exception;
 use super\ticket\mail\Mailer;
@@ -137,23 +138,23 @@ class SuperTicketEvent extends ActiveRecord
         return $this->hasOne(SuperUser::class, ['user_id' => 'created_by']);
     }
 
-    public static function createTicketEvent($ticket_id, $type, $body, $super_user_id = null, $metadata = null)
+    public static function createTicketEvent($ticket_id, $type, $body, $metadata = null)
     {
-        if (empty($super_user_id)) {
-            $superUser = SuperUser::findOne(['user_id' => Yii::$app->user->id]);
-
-            $super_user_id = $superUser->id;
-        }
-
         $event = new SuperTicketEvent();
         $event->ticket_id = $ticket_id;
-        $event->super_user_id = $super_user_id;
         $event->type = $type;
         $event->body = $body;
         $event->metadata = json_encode($metadata);
 
         if ($event->save()) {
-            SuperTicketFollower::follow($ticket_id, $super_user_id);
+            foreach($event->getRecipients() as $recipient) {
+                SuperTicketFollower::follow($ticket_id, $recipient->id);
+            }
+
+            //Event creator follows by default
+            if($event->creator) {
+                SuperTicketFollower::follow($ticket_id, $event->creator->id);
+            }
 
             //TODO questa cosa della riapertura va riorganizzata in modo da avere codice più pulito
             if ($event->type == self::TYPE_COMMENT) {
@@ -194,9 +195,9 @@ class SuperTicketEvent extends ActiveRecord
     {
         //metadata used for special functions like custom recipients
         $metadata = !empty($this->metadata) ? json_decode($this->metadata, true) : [];
+        $creatorId = $this->creator ? $this->creator->id : null;
 
-        $exclusions = [$this->creator->id ?: $this->super_user_id];
-
+        $exclusions = [$creatorId ?: $this->super_user_id, null];
         $fetchers = SuperMail::find()->select('address');
 
         if (!empty($metadata) && isset($metadata['recipients'])) {
@@ -212,10 +213,11 @@ class SuperTicketEvent extends ActiveRecord
                 return $rq->all();
         }
 
-        return $this->ticket
+        $q = $this->ticket
             ->getFollowers($exclusions)
-            ->andWhere(['not', ['email' => $fetchers]])
-            ->all();
+            ->andWhere(['not', ['email' => $fetchers]]);
+
+        return $q->all();
     }
 
     public function getPrevious($type = 'comment')

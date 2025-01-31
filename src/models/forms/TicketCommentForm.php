@@ -65,7 +65,6 @@ class TicketCommentForm extends Model
                 $this->ticket_id,
                 SuperTicketEvent::TYPE_COMMENT,
                 $this->body,
-                $this->user_id,
                 $metadata
             );
         }

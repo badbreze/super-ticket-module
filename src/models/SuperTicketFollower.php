@@ -133,17 +133,20 @@ class SuperTicketFollower extends ActiveRecord
     /**
      * @param $ticket_id
      * @param $super_user_id
-     * @return SuperTicketFollower
+     * @return SuperTicketFollower|null
      */
-    public static function follow($ticket_id, $super_user_id)
+    public static function follow($ticket_id, $super_user_id, $force = false)
     {
+        if(!$super_user_id || !$ticket_id)
+            return null;
+
         $follow = self::findOne([
                                     'ticket_id' => $ticket_id,
                                     'super_user_id' => $super_user_id
                                 ]);
 
         if($follow) {
-            if($follow->status != self::STATUS_FOLLOW) {
+            if($follow->status != self::STATUS_FOLLOW && $force) {
                 $follow->status = self::STATUS_FOLLOW;
                 $follow->save();
             }

@@ -27,6 +27,18 @@ class RouteHelper
                        ], $scheme);
     }
 
+    public static function toFollowed($organization_id, $scheme = false)
+    {
+        if (self::usePrettyUrl()) {
+            return Url::to(["/m/{$organization_id}"]);
+        }
+
+        return Url::to([
+            '/super/ticket/my-tickets',
+            'domain_id' => $organization_id,
+        ], $scheme);
+    }
+
     public static function toTicket($ticket_id, $organization_id = null, $scheme = false)
     {
         if (empty($organization_id)) {

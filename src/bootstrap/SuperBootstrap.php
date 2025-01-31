@@ -14,6 +14,7 @@ class SuperBootstrap implements \yii\base\BootstrapInterface
         \Yii::$app->urlManager
             ->addRules([
                            'o/<domain_id:[0-9]+>' => '/super/ticket/list',
+                           'm/<domain_id:[0-9]+>' => '/super/ticket/my-tickets',
                            't/<ticket_id:[0-9]+>' => '/super/ticket/detail',
                            //'work/<domain_id:[^\/]+>/<ticket_id:[^\/]+>' => '/super/ticket/detail',
                        ], false);

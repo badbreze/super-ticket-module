@@ -15,7 +15,8 @@ class UserHelper
     public static function getCurrentUser()
     {
         $query = SuperUser::find()
-            ->andWhere(['user_id' => \Yii::$app->user->id]);
+            ->andWhere(['user_id' => \Yii::$app->user->id])
+            ->andWhere(['not', ['user_id' => null]]);
 
         return $query->one();
     }
@@ -101,10 +102,12 @@ class UserHelper
      * @return array
      * @throws Exception
      */
-    public static function getUsersFromContactsArray($domain_id, array $contacts) {
+    public static function getUsersFromContactsArray($domain_id, array $contacts)
+    {
         $users = [];
 
         foreach ($contacts as $contact) {
+
             $users[] = self::getUserFromContact($domain_id, $contact);
         }
 

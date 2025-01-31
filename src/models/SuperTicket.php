@@ -259,7 +259,7 @@ class SuperTicket extends ActiveRecord
     {
         return $this
             ->hasMany(SuperTicketFollower::className(), ['ticket_id' => 'id'])
-            ->andOnCondition(['not', ['super_user_id' => $exclusions]])
+            ->andOnCondition(['not', ['super_ticket_follower.super_user_id' => $exclusions]])
             ->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
     }
 
@@ -269,7 +269,7 @@ class SuperTicket extends ActiveRecord
      * @param $exclusions integer|array users to exclude
      * @return \yii\db\ActiveQuery
      */
-    public function getFollowers($exclusions = 0)
+    public function getFollowers($exclusions = [])
     {
         return $this
             ->hasMany(SuperUser::className(), ['id' => 'super_user_id'])
@@ -302,11 +302,6 @@ class SuperTicket extends ActiveRecord
 
 //print_r($q->createCommand()->rawSql);die;
         return $q;
-    }
-
-    public function addEvent($type, $body, $super_user_id = null, $metadata = null)
-    {
-        return SuperTicketEvent::createTicketEvent($this->id, $type, $body, $super_user_id, $metadata);
     }
 
     /**
@@ -389,10 +384,10 @@ class SuperTicket extends ActiveRecord
     {
         $this->agent_id = $agent_id;
 
-        $this->addEvent(
+        SuperTicketEvent::createTicketEvent(
+            $this->id,
             SuperTicketEvent::TYPE_ASSIGNEE,
             Yii::t('super', 'assigned to {user}', ['user' => $this->agent->fullName]),
-            null,
             [
                 'recipients' => $this->agent->id
             ]
@@ -411,7 +406,8 @@ class SuperTicket extends ActiveRecord
 
         $this->due_date = $this->calculateDueDate();
 
-        $this->addEvent(
+        SuperTicketEvent::createTicketEvent(
+            $this->id,
             SuperTicketEvent::TYPE_PRIORITY,
             Yii::t('super', 'Changed the priority to {priority}', ['priority' => $this->priority->name])
         );
@@ -470,8 +466,11 @@ class SuperTicket extends ActiveRecord
     {
         $dueDate = clone $startDate;
         $remainingHours = $this->priority->sla->grace_period;
+        $loopStop = 20;
 
-        while ($remainingHours > 0) {
+        while ($remainingHours > 0 && $loopStop > 0) {
+            $loopStop--;
+
             $dueDate = $this->priority->sla->schedule->getNextWorkingDayByDate($dueDate);
 
             if(!$dueDate) {
@@ -483,6 +482,7 @@ class SuperTicket extends ActiveRecord
 
             if($diffDueToWork == '+' ) {
                 $dueDate->modify('+1 day');
+
                 continue;
             }
 
@@ -491,6 +491,7 @@ class SuperTicket extends ActiveRecord
                     $workDay->getStartHour()->format('H'),
                     $workDay->getStartHour()->format('i')
                 );
+
             }
 
             // Calculate hours until end of current working day
@@ -520,7 +521,8 @@ class SuperTicket extends ActiveRecord
     {
         $this->status_id = $status_id;
 
-        $this->addEvent(
+        SuperTicketEvent::createTicketEvent(
+            $this->id,
             SuperTicketEvent::TYPE_STATUS_CHANGE,
             Yii::t('super', 'Marked as {status}', ['status' =>  Yii::t('super', $this->status->name)])
         );

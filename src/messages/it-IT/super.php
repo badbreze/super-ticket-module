@@ -46,4 +46,5 @@ return [
     'Domain' => 'Contesto',
     'Members' => 'Membri',
     'Add Recipient' => 'Invita',
+    'By' => 'Di',
 ];

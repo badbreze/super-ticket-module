@@ -121,7 +121,9 @@ $statuses = StatusHelper::getAvailableStatuses();
             <p>
                 <ul>
                     <?php foreach ($ticket->ticketFollowers as $follower): ?>
-                        <li><?= $follower->superUser->fullName; ?> (<?= $follower->superUser->id; ?>[<?= $follower->superUser->email; ?>])</li>
+                        <li><?= $follower->superUser->fullName; ?>
+                        <!--    (<?= $follower->superUser->id; ?>[<?= $follower->superUser->email; ?>])-->
+                        </li>
                     <?php endforeach; ?>
                 </ul>
             </p>

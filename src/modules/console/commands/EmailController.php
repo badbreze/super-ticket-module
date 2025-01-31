@@ -37,21 +37,17 @@ class EmailController extends Controller
         $time = microtime();
 
         //Debug
-        Console::stdout("SF {$time}\n");
         Console::stdout("Found {$mailSourcesQuery->count()} Mail Sources\n");
 
         foreach ($mailSourcesQuery->all() as $mailSource) {
             try {
-                Console::stdout("Processing: {$mailSource->id}\n");
+                Console::stdout("Processing: {$mailSource->name}\n");
                 $this->processMailBox($mailSource);
             } catch (\Exception $e) {
                 //Debug
                 Console::stdout("Unable To Process Mailbox: {$e->getMessage()}\n");
             }
         }
-
-        //Debug
-        Console::stdout("EF {$time}\n");
     }
 
     public function processMailBox(SuperMail $source)
@@ -63,7 +59,6 @@ class EmailController extends Controller
         $time = microtime();
 
         //Debug
-        Console::stdout("SS: {$time}\n");
         Console::stdout("Found: {$mailbox->count} mails\n");
 
         foreach ($mailbox->mailIds as $mail_id) {
@@ -83,9 +78,11 @@ class EmailController extends Controller
                     throw new Exception("Unable to move the mail to the new box\n");
                 }
 
+                Console::stdout("Moved Mail: {$mail_id}\n");
+
                 //$transaction->commit();
             } catch (\Exception $e) {
-                Console::stdout("Unable to complete mail processing: {$e->getMessage()}");
+                Console::stdout("Unable to complete mail processing: {$e->getMessage()}\n");
                 Console::stdout($e->getTraceAsString());
 
                 //$transaction->rollBack();
@@ -93,9 +90,6 @@ class EmailController extends Controller
 
             Console::stdout("Mail parsed successiful: {$mail_id}\n");
         }
-
-        //Debug
-        Console::stdout("ES: {$time}\n");
     }
 
     public function evaluateMailScope(\PhpImap\IncomingMail $mail, SuperMail $source)
@@ -105,10 +99,10 @@ class EmailController extends Controller
         print_r("\nChoosing Mail Scope...\n");
 
         if ($refferedToTicket->count()) {
-            print_r("\nCreo Commento da Mail\n");
+            Console::stdout("\nThis Mail is a Comment\n");
             self::createCommentFromMail($mail, $source);
         } else {
-            print_r("\nCreo Nuovo Ticket da Mail\n");
+            Console::stdout("\nThis Mail is a New Ticket\n");
             self::createTicketFromMail($mail, $source);
         }
 
@@ -141,7 +135,6 @@ class EmailController extends Controller
             'metadata' => serialize($mail)
         ]);
 
-
         //Calculate Due Date
         $newTicket->due_date = $newTicket->calculateDueDate();
 
@@ -149,6 +142,7 @@ class EmailController extends Controller
             $newTicket->created_at = $mail->date;
         }
 
+        Console::stdout("Saving ticket!\n");
         $newTicket->save();
 
         if ($newTicket->hasErrors()) {
@@ -170,9 +164,11 @@ class EmailController extends Controller
         }
 
         //Opener Follows His Own Ticket
+        Console::stdout("Make Opener Follow: {$owner->id}\n");
         SuperTicketFollower::follow($newTicket->id, $owner->id);
 
         //Agent follows ticket
+        Console::stdout("Make Agent Follow: {$newTicket->agent_id}\n");
         SuperTicketFollower::follow($newTicket->id, $newTicket->agent_id);
 
         //Link all related tickets
@@ -181,6 +177,7 @@ class EmailController extends Controller
         }
 
         foreach ($followers as $follower) {
+            Console::stdout("Adding Followers: {$follower->id}\n");
             SuperTicketFollower::follow($newTicket->id, $follower->id);
         }
 
@@ -195,15 +192,17 @@ class EmailController extends Controller
         $owner = UserHelper::getUserFromContact($source->domain_id, $contact);
         $followers = UserHelper::getUsersFromContactsArray($source->domain_id, $followerContacts);
 
-        $relatedMailQ = EmailHelper::getTicketMatchesQuery($mail);
-        $relatedMail = $relatedMailQ->one();
+        $ticketRelatedToMailQ = EmailHelper::getTicketMatchesQuery($mail);
+        $ticketRelatedToMail = $ticketRelatedToMailQ->one();
         $contentParts = StringHelper::splitMailReply($mail->textHtml ?: $mail->textPlain);
 
         $comment = SuperTicketEvent::createTicketEvent(
-            $relatedMail->id,
+            $ticketRelatedToMail->id,
             SuperTicketEvent::TYPE_COMMENT,
             $contentParts[0],
-            $owner->id
+            [
+                'recipients' => $owner->id
+            ]
         );
 
         if (!$comment) {
@@ -221,7 +220,8 @@ class EmailController extends Controller
         }
 
         foreach ($followers as $follower) {
-            SuperTicketFollower::follow($relatedMail->id, $follower->id);
+            Console::stdout("Adding Followers Of Comment: {$follower->id}\n");
+            SuperTicketFollower::follow($ticketRelatedToMail->id, $follower->id);
         }
 
         return $comment;
