@@ -23,9 +23,9 @@ use yii\helpers\Html;
             </a>
 
             <div class="dropdown-menu shadow-sm border-0" style="text-align: center">
-                <a class="dropdown-item" href="#" title="esci" data-method="post" tabindex="-1">
+                <!--a class="dropdown-item" href="#" title="esci" data-method="post" tabindex="-1">
                    Elimina
-                </a>
+                </a-->
             </div>
         </div>
 
@@ -97,7 +97,7 @@ use yii\helpers\Html;
                     'format' => 'text',
                     'label' => Yii::t('super', 'Last Update'),
                 ],
-                /*[
+                [
                     'class' => \yii\grid\DataColumn::class, // this line is optional
                     'attribute' => 'comments',
                     'format' => 'raw',
@@ -105,7 +105,7 @@ use yii\helpers\Html;
                         return $model->getComments()->count(); // your url here
                     },
                     'label' => Yii::t('super', 'Comments'),
-                ],*/
+                ],
             ]
         ]); ?>
     </div>

@@ -12,6 +12,9 @@ use yii\web\View;
 <div class="p-2 bd-highlight">
     <b>
         <?= Html::a($model->subject, RouteHelper::toTicket($model->id)); ?>
+        <?php if($model->attachments) : ?>
+            <i class="fas fa-paperclip"></i>
+        <?php endif; ?>
     </b>
     <p>
         <i>

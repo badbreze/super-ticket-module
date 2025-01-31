@@ -121,6 +121,7 @@ a.active {
     margin-bottom: 34px;
     box-shadow: inset 12px 10px 14px -11px #eee;
     border-radius: 10px 36px;
+    border-top: 3px solid #b71b1a;
 }
 
 .ticket-comment-body {
