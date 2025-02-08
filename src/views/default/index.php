@@ -8,11 +8,11 @@ use super\ticket\helpers\TicketHelper;
 
 \super\ticket\assets\EnjoyAsset::register($this);
 ?>
-<h4><?= Yii::t('super', 'Choose Workspace'); ?></h4>
-    <div class="row pb-4">
+<h4 class="pt-3 pb-2"><?= Yii::t('super', 'Choose Workspace'); ?></h4>
+    <div class="row pb-2">
 
         <?php foreach (\super\ticket\helpers\DomainHelper::getAvailableDomains() as $availableDomain) : ?>
-        <div class="col-lg-3 d-flex grid-margin stretch-card">
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4 grid-margin stretch-card">
             <div class="card sale-diffrence-border">
                 <div class="card-body">
                     <h4 class="card-title mb-2">

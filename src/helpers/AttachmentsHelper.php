@@ -3,15 +3,12 @@
 namespace super\ticket\helpers;
 
 use elitedivision\amos\attachments\FileModule;
-use PhpImap\IncomingMailAttachment;
-use super\ticket\models\SuperTicket;
-use super\ticket\models\SuperTicketStatus;
+use super\ticket\base\ImapMailAttachment;
 use yii\helpers\FileHelper;
-use yii\helpers\Url;
 
 class AttachmentsHelper
 {
-    public static function attachFile(IncomingMailAttachment $attachment, $owner, $attribute = 'attachments', $dropOriginFile = true) {
+    public static function attachFile(ImapMailAttachment $attachment, $owner, $attribute = 'attachments', $dropOriginFile = true) {
         if(empty($attachment) || empty($attachment->getContents())) {
             return null;
         }
@@ -27,7 +24,11 @@ class AttachmentsHelper
         file_put_contents($attachtempDir.$attachment->name, $attachment->getContents());
 
         if($module) {
-            return $module->attachFile($attachtempDir.$attachment->name, $owner, $attribute, $dropOriginFile);
+            try {
+                return $module->attachFile($attachtempDir.$attachment->name, $owner, $attribute, $dropOriginFile);
+            } catch (\Exception $exception) {
+                \Yii::error("Attachment skipped {$attachment->name} cause {$exception->getMessage()}");
+            }
         }
 
         return false;

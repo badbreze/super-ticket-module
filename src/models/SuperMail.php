@@ -3,7 +3,7 @@
 namespace super\ticket\models;
 
 use super\ticket\db\ActiveRecord;
-use super\ticket\modules\console\base\MailBox;
+use super\ticket\base\MailBox;
 use super\ticket\modules\console\helpers\EmailHelper;
 use Yii;
 
@@ -131,7 +131,7 @@ class SuperMail extends ActiveRecord
         }
 
         $mailbox = new MailBox([
-                                   'connection' => EmailHelper::getMailBoxConnection($this)
+                                   'super_mail' => $this
                                ]);
 
         try {

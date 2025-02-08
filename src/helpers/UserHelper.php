@@ -3,6 +3,7 @@
 namespace super\ticket\helpers;
 
 use super\ticket\models\SuperUser;
+use yii\console\Application;
 use yii\db\Exception;
 
 class UserHelper
@@ -14,6 +15,10 @@ class UserHelper
      */
     public static function getCurrentUser()
     {
+        if(\Yii::$app instanceof Application) {
+            return null;
+        }
+
         $query = SuperUser::find()
             ->andWhere(['user_id' => \Yii::$app->user->id])
             ->andWhere(['not', ['user_id' => null]]);
@@ -34,7 +39,8 @@ class UserHelper
     public static function parseAndGetUser($domain_id, $name, $surname = null, $email = null, $phone = null)
     {
         $query = SuperUser::find()
-            ->andWhere(['domain_id' => $domain_id]);
+            ->andWhere(['domain_id' => [$domain_id, null]])
+            ->orderBy(['domain_id' => SORT_ASC]);
 
         //Parsing the name as a full name
         if ($surname == null) {
@@ -63,7 +69,7 @@ class UserHelper
         if (empty($record) || !$record->id) {
             $record = new SuperUser([
                 'domain_id' => $domain_id,
-                'name' => $name,
+                'name' => $name ?: $email,
                 'surname' => $surname,
                 'email' => $email,
                 'phone' => $phone,
@@ -72,7 +78,8 @@ class UserHelper
             $record->save();
 
             if ($record->hasErrors() || !$record->id) {
-                throw new Exception("Unable to save the new user");
+                $errors = json_encode($record->getErrors());
+                throw new Exception("Unable to save the new user: {$errors}");
             }
         }
 

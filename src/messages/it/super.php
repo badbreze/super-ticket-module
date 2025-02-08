@@ -47,4 +47,6 @@ return [
     'Members' => 'Membri',
     'Add Recipient' => 'Invita',
     'By' => 'Di',
+    'Add' => 'Aggiungi',
+    'Bulk Edit' => 'Modifica Collettiva',
 ];

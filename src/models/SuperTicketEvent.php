@@ -138,13 +138,14 @@ class SuperTicketEvent extends ActiveRecord
         return $this->hasOne(SuperUser::class, ['user_id' => 'created_by']);
     }
 
-    public static function createTicketEvent($ticket_id, $type, $body, $metadata = null)
+    public static function createTicketEvent($ticket_id, $type, $body, $super_user_id = null, $metadata = null)
     {
         $event = new SuperTicketEvent();
         $event->ticket_id = $ticket_id;
         $event->type = $type;
         $event->body = $body;
         $event->metadata = json_encode($metadata);
+        $event->super_user_id = $super_user_id;
 
         if ($event->save()) {
             foreach($event->getRecipients() as $recipient) {
@@ -191,7 +192,7 @@ class SuperTicketEvent extends ActiveRecord
         return true;
     }
 
-    public function getRecipients()
+    public function  getRecipients()
     {
         //metadata used for special functions like custom recipients
         $metadata = !empty($this->metadata) ? json_decode($this->metadata, true) : [];
@@ -201,11 +202,18 @@ class SuperTicketEvent extends ActiveRecord
         $fetchers = SuperMail::find()->select('address');
 
         if (!empty($metadata) && isset($metadata['recipients'])) {
+            if(!is_array($metadata['recipients'])) {
+                $recipients = array($metadata['recipients']);
+            } else {
+                $recipients = $metadata['recipients'];
+            }
+
+            $exclusions = array_diff($exclusions, $recipients);
+
             $rq = SuperUser::find()
                 ->andWhere(['id' => $metadata['recipients']])
                 ->andWhere(['not', ['id' => $exclusions]])
                 ->andWhere(['not', ['email' => $fetchers]]);
-            //->andWhere(['status' => SuperTicketFollower::STATUS_FOLLOW]);
 
             //print_r($rq->createCommand()->rawSql);
 

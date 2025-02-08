@@ -242,7 +242,7 @@ class TicketController extends Controller
             return $this->redirect(RouteHelper::toTicket($ticket_id));
         }
 
-        return $this->render('parts/recipient_modal', [
+        return $this->render('parts/modal_recipient', [
             'model' => $model,
             'ticket' => $ticket,
         ]);

@@ -7,4 +7,4 @@ use super\ticket\models\SuperTicketEvent;
  */
 ?>
 
-<?= $event->superUser->fullName; ?> ha commentato il ticket "<?=$event->ticket->subject; ?>"
+<?= $event->superUser ? $event->superUser->fullName : $event->creator; ?> ha commentato il ticket "<?=$event->ticket->subject; ?>"

@@ -28,7 +28,6 @@ use yii\helpers\ArrayHelper;
  * @property int|null $domain_id
  * @property int|null $agent_id
  * @property string|null $due_date
- * @property string|null $metadata
  * @property string|null $created_at Creato il
  * @property string|null $updated_at Aggiornato il
  * @property string|null $deleted_at Cancellato il
@@ -87,7 +86,7 @@ class SuperTicket extends ActiveRecord
     {
         return [
             [['subject', 'content', 'status_id', 'super_user_id', 'source_id', 'team_id', 'domain_id'], 'required'],
-            [['source_type', 'source_enum', 'content', 'metadata'], 'string'],
+            [['source_type', 'source_enum', 'content'], 'string'],
             [
                 [
                     'status_id',
@@ -282,7 +281,8 @@ class SuperTicket extends ActiveRecord
      * @return ActiveQuery
      * @throws \yii\base\InvalidConfigException
      */
-    public function getFollowable($exclusions = 0) {
+    public function getFollowable($exclusions = 0)
+    {
         //Basic Filter
         $q = SuperUser::find()
             ->andWhere(['not', ['id' => $exclusions]]);
@@ -290,7 +290,7 @@ class SuperTicket extends ActiveRecord
         //Magic Getter to result rows
         $q->multiple = true;
 
-        if(Yii::$app->user->can('SUPER_ADMIN')) {
+        if (Yii::$app->user->can('SUPER_ADMIN')) {
             return $q;
         }
 
@@ -368,11 +368,11 @@ class SuperTicket extends ActiveRecord
                     'AND',
                     ['super_domain.id' => $this->domain_id],
                     ['customer_role_id' => [
-                            SuperCustomerRole::ROLE_OWNER,
-                            SuperCustomerRole::ROLE_ADMIN,
-                            SuperCustomerRole::ROLE_AGENT,
-                            SuperCustomerRole::ROLE_MANAGER,
-                        ]
+                        SuperCustomerRole::ROLE_OWNER,
+                        SuperCustomerRole::ROLE_ADMIN,
+                        SuperCustomerRole::ROLE_AGENT,
+                        SuperCustomerRole::ROLE_MANAGER,
+                    ]
                     ]
                 ],
                 ['super_user.domain_id' => null],
@@ -382,18 +382,24 @@ class SuperTicket extends ActiveRecord
 
     public function updateAssignee($agent_id)
     {
-        $this->agent_id = $agent_id;
+        if ($this->agent_id != $agent_id) {
+            $this->agent_id = $agent_id;
+            $res = $this->save(false);
+        } else {
+            $res = true;
+        }
 
         SuperTicketEvent::createTicketEvent(
             $this->id,
             SuperTicketEvent::TYPE_ASSIGNEE,
             Yii::t('super', 'assigned to {user}', ['user' => $this->agent->fullName]),
+            UserHelper::getCurrentUser() ? UserHelper::getCurrentUser()->id : null,
             [
                 'recipients' => $this->agent->id
             ]
         );
 
-        return $this->save(false);
+        return $res;
     }
 
     /**
@@ -409,7 +415,8 @@ class SuperTicket extends ActiveRecord
         SuperTicketEvent::createTicketEvent(
             $this->id,
             SuperTicketEvent::TYPE_PRIORITY,
-            Yii::t('super', 'Changed the priority to {priority}', ['priority' => $this->priority->name])
+            Yii::t('super', 'Changed the priority to {priority}', ['priority' => $this->priority->name]),
+            UserHelper::getCurrentUser()->id,
         );
 
         return $this->save(false);
@@ -435,9 +442,9 @@ class SuperTicket extends ActiveRecord
             $startDate = new \DateTime($this->created_at);
 
             //TODO logica da vincolare a un'opzione, magari non tutti la vogliono così
-            if($startDate->format('i') > 0) {
+            if ($startDate->format('i') > 0) {
                 $startDate->modify('+1 hour');
-                $startDate->setTime($startDate->format('H'),0,0);
+                $startDate->setTime($startDate->format('H'), 0, 0);
             }
         }
 
@@ -473,20 +480,20 @@ class SuperTicket extends ActiveRecord
 
             $dueDate = $this->priority->sla->schedule->getNextWorkingDayByDate($dueDate);
 
-            if(!$dueDate) {
+            if (!$dueDate) {
                 return null;
             }
 
             $workDay = $this->priority->sla->schedule->getEntryByDate($dueDate)->one();
             $diffDueToWork = DateTimeHelper::compareTimeOnly($dueDate, $workDay->getEndHour());
 
-            if($diffDueToWork == '+' ) {
+            if ($diffDueToWork == '+') {
                 $dueDate->modify('+1 day');
 
                 continue;
             }
 
-            if($workDay->getStartHour()->format('H') > $dueDate->format('H')) {
+            if ($workDay->getStartHour()->format('H') > $dueDate->format('H')) {
                 $dueDate->setTime(
                     $workDay->getStartHour()->format('H'),
                     $workDay->getStartHour()->format('i')
@@ -524,7 +531,8 @@ class SuperTicket extends ActiveRecord
         SuperTicketEvent::createTicketEvent(
             $this->id,
             SuperTicketEvent::TYPE_STATUS_CHANGE,
-            Yii::t('super', 'Marked as {status}', ['status' =>  Yii::t('super', $this->status->name)])
+            Yii::t('super', 'Marked as {status}', ['status' => Yii::t('super', $this->status->name)]),
+            UserHelper::getCurrentUser()->id,
         );
 
         return $this->save(false);

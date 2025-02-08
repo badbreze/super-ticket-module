@@ -23,9 +23,13 @@ use yii\helpers\Html;
             </a>
 
             <div class="dropdown-menu shadow-sm border-0" style="text-align: center">
-                <!--a class="dropdown-item" href="#" title="esci" data-method="post" tabindex="-1">
-                   Elimina
-                </a-->
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#bulk-edit-modal" tabindex="-1">
+                   Modifica
+                </a>
+
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#bulk-delete-modal" tabindex="-1">
+                    Elimina
+                </a>
             </div>
         </div>
 
@@ -110,3 +114,9 @@ use yii\helpers\Html;
         ]); ?>
     </div>
 </div>
+
+<?php \yii\bootstrap4\Modal::begin(['id' => 'bulk-edit-modal', 'title' => Yii::t('super', 'Bulk Edit')]); ?>
+    <?= $this->render('parts/modal_bulk', [
+        'model' => new \super\ticket\models\forms\SuperTicketBulkForm(),
+    ]); ?>
+<?php \yii\bootstrap4\Modal::end(); ?>

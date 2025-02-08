@@ -2,10 +2,9 @@
 
 namespace super\ticket\modules\console\commands;
 
-use elitedivision\amos\attachments\FileModule;
+use super\ticket\base\ImapMail;
 use super\ticket\helpers\AttachmentsHelper;
 use super\ticket\helpers\StringHelper;
-use super\ticket\helpers\TicketHelper;
 use super\ticket\helpers\UserHelper;
 use super\ticket\mail\MailSubject;
 use super\ticket\models\SuperMail;
@@ -13,7 +12,7 @@ use super\ticket\models\SuperTicket;
 use super\ticket\models\SuperTicketEvent;
 use super\ticket\models\SuperTicketFollower;
 use super\ticket\models\SuperTicketLink;
-use super\ticket\modules\console\base\MailBox;
+use super\ticket\base\MailBox;
 use super\ticket\modules\console\helpers\EmailHelper;
 use yii\base\Exception;
 use yii\console\Controller;
@@ -53,7 +52,7 @@ class EmailController extends Controller
     public function processMailBox(SuperMail $source)
     {
         $mailbox = new MailBox([
-            'connection' => EmailHelper::getMailBoxConnection($source)
+            'super_mail' => $source
         ]);
 
         $time = microtime();
@@ -68,7 +67,7 @@ class EmailController extends Controller
             Console::stdout("Process: {$mail_id}\n");
             Console::stdout("Subject: {$mail->subject}\n");
 
-            //$transaction = \Yii::$app->db->beginTransaction();
+            $transaction = \Yii::$app->db->beginTransaction();
 
             try {
                 self::evaluateMailScope($mail, $source);
@@ -80,19 +79,17 @@ class EmailController extends Controller
 
                 Console::stdout("Moved Mail: {$mail_id}\n");
 
-                //$transaction->commit();
+                $transaction->commit();
             } catch (\Exception $e) {
                 Console::stdout("Unable to complete mail processing: {$e->getMessage()}\n");
                 Console::stdout($e->getTraceAsString());
 
-                //$transaction->rollBack();
+                $transaction->rollBack();
             }
-
-            Console::stdout("Mail parsed successiful: {$mail_id}\n");
         }
     }
 
-    public function evaluateMailScope(\PhpImap\IncomingMail $mail, SuperMail $source)
+    public function evaluateMailScope(ImapMail $mail, SuperMail $source)
     {
         $refferedToTicket = EmailHelper::getMailTicketReffered($mail);
 
@@ -109,7 +106,7 @@ class EmailController extends Controller
         return true;
     }
 
-    public function createTicketFromMail(\PhpImap\IncomingMail $mail, SuperMail $source)
+    public function createTicketFromMail(ImapMail $mail, SuperMail $source)
     {
         $contact = EmailHelper::getContactFromEmail($mail);
         $relatedTickets = EmailHelper::getSubjectTicketReffered($mail, false)->all();
@@ -119,7 +116,7 @@ class EmailController extends Controller
         $followers = UserHelper::getUsersFromContactsArray($source->domain_id, $followerContacts);
 
         $subject = new MailSubject(['subject' => $mail->subject]);
-        $contentParts = StringHelper::splitMailReply($mail->textHtml ?: $mail->textPlain);
+        $contentParts = StringHelper::splitMailReply($mail->content);
 
         $newTicket = new SuperTicket([
             'subject' => $subject->subject ?: 'Support',
@@ -139,11 +136,11 @@ class EmailController extends Controller
         $newTicket->due_date = $newTicket->calculateDueDate();
 
         if ($mail->date) {
-            $newTicket->created_at = $mail->date;
+            $newTicket->created_at = $mail->date->format('Y-m-d H:i:s');
         }
 
-        Console::stdout("Saving ticket!\n");
         $newTicket->save();
+        Console::stdout("Saved ticket {$newTicket->id}!\n");
 
         if ($newTicket->hasErrors()) {
             print_r($newTicket->getErrors());
@@ -153,11 +150,8 @@ class EmailController extends Controller
         //Notify Assignee
         $newTicket->updateAssignee($source->agent_id);
 
-        //Store Original EML
-        //$mail->
-
         //Attachments from mail
-        if($mail->hasAttachments()) {
+        if(!empty($mail->getAttachments())) {
             foreach ($mail->getAttachments() as $attachment) {
                 AttachmentsHelper::attachFile($attachment, $newTicket);
             }
@@ -173,6 +167,7 @@ class EmailController extends Controller
 
         //Link all related tickets
         foreach ($relatedTickets as $relatedTicket) {
+            Console::stdout("Linking to ticket: {$relatedTicket->id}\n");
             $newTicket->link('relatedTickets', $relatedTicket, ['type' => SuperTicketLink::TYPE_COPY]);
         }
 
@@ -184,7 +179,7 @@ class EmailController extends Controller
         return $newTicket;
     }
 
-    public function createCommentFromMail(\PhpImap\IncomingMail $mail, SuperMail $source)
+    public function createCommentFromMail(ImapMail $mail, SuperMail $source)
     {
         $contact = EmailHelper::getContactFromEmail($mail);
         $followerContacts = EmailHelper::getFollowersFromEmail($mail);
@@ -194,12 +189,13 @@ class EmailController extends Controller
 
         $ticketRelatedToMailQ = EmailHelper::getTicketMatchesQuery($mail);
         $ticketRelatedToMail = $ticketRelatedToMailQ->one();
-        $contentParts = StringHelper::splitMailReply($mail->textHtml ?: $mail->textPlain);
+        $contentParts = StringHelper::splitMailReply($mail->content);
 
         $comment = SuperTicketEvent::createTicketEvent(
             $ticketRelatedToMail->id,
             SuperTicketEvent::TYPE_COMMENT,
             $contentParts[0],
+            $owner->id,
             [
                 'recipients' => $owner->id
             ]
@@ -210,7 +206,7 @@ class EmailController extends Controller
         }
 
         //Attachments from mail
-        if($mail->hasAttachments()) {
+        if(!empty($mail->getAttachments())) {
             foreach ($mail->getAttachments() as $attachment) {
                 echo "ATTACH:::\n";
                 print_r($attachment->name);

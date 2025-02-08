@@ -71,6 +71,10 @@ class SuperTicketStatus extends ActiveRecord
         ];
     }
 
+    public function getStatusName() {
+        return Yii::t('super', $this->name);
+    }
+
     /**
      * Gets query for [[Customer]].
      *

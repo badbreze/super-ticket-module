@@ -2,7 +2,7 @@
 
 namespace super\ticket\modules\console\helpers;
 
-use PhpImap\IncomingMail;
+use super\ticket\base\ImapMail;
 use super\ticket\mail\MailSubject;
 use super\ticket\models\SuperMail;
 use super\ticket\models\SuperTicket;
@@ -56,57 +56,27 @@ class EmailHelper
     }
 
     /**
-     * Get a mailbox instance by source
-     * @param SuperMail $mail
-     * @return \PhpImap\Mailbox
-     * @throws Exception
-     * @throws \PhpImap\Exceptions\InvalidParameterException
-     * @throws \yii\base\InvalidConfigException
-     */
-    public static function getMailBoxConnection(SuperMail $mail)
-    {
-        $imapPath = self::expressImapPath($mail);
-
-        // Create PhpImap\Mailbox instance for all further actions
-        $connection = new \PhpImap\Mailbox(
-            "{{$imapPath}}{$mail->folder}", // IMAP server and mailbox folder
-            $mail->username, // Username for the before configured mailbox
-            $mail->password, // Password for the before configured username
-            false,//__DIR__, // Directory, where attachments will be saved (optional)
-            'UTF-8', // Server encoding (optional)
-            true, // Trim leading/ending whitespaces of IMAP path (optional)
-            false // Attachment filename mode (optional; false = random filename; true = original filename)
-        );
-
-        // set some connection arguments (if appropriate)
-        //$connection->setConnectionArgs(CL_EXPUNGE | OP_SECURE);
-        //$connection->setImapSearchOption(SE_FREE);
-
-        return $connection;
-    }
-
-    /**
-     * @param IncomingMail $email
+     * @param ImapMail $email
      * @return array
      */
-    public static function getContactFromEmail(IncomingMail $email) {
-        $nameParts =  explode(' ', $email->fromName);
+    public static function getContactFromEmail(ImapMail $email) {
+        $nameParts =  explode(' ', $email->mail->fromName);
         $name = reset($nameParts);
         unset($nameParts[0]);
 
         $result = [
             'name' => $name,
             'surname' => trim(join(' ', $nameParts)),
-            'email' => $email->fromAddress,
+            'email' => $email->mail->fromAddress,
             'phone' => null,
-            'host' => $email->fromHost,
+            'host' => $email->mail->fromHost,
         ];
 
         return $result;
     }
 
-    public static function getFollowersFromEmail(IncomingMail $email) {
-        $ccs = $email->cc;
+    public static function getFollowersFromEmail(ImapMail $email) {
+        $ccs = $email->mail->cc;
         $result = [];
 
         foreach ($ccs as $mail => $fullName) {
@@ -119,7 +89,7 @@ class EmailHelper
                 'surname' => trim(join(' ', $nameParts)),
                 'email' => $mail,
                 'phone' => null,
-                'host' => $email->fromHost,
+                'host' => $email->mail->fromHost,
             ];
         }
 
@@ -127,23 +97,23 @@ class EmailHelper
     }
 
     /**
-     * @param IncomingMail $mail
+     * @param ImapMail $mail
      * @return int
      */
-    public static function isMailTicketReffered(\PhpImap\IncomingMail $mail) {
+    public static function isMailTicketReffered(ImapMail $mail) {
         //TODO implementare se necessario verifiche nel corpo della mail per
         // constatarne l'appartenenza ad un ticket già esistente
         return self::getMailTicketReffered($mail)->count();
     }
 
-    public static function getMailTicketReffered(\PhpImap\IncomingMail $mail) {
+    public static function getMailTicketReffered(ImapMail $mail) {
         $bySubject = self::getSubjectTicketReffered($mail);
         $byThread = self::getThreadTicketReffered($mail);
 
         return $bySubject;
     }
 
-    public static function getSubjectTicketReffered(\PhpImap\IncomingMail $mail, $ignoreClosed = true) {
+    public static function getSubjectTicketReffered(ImapMail $mail, $ignoreClosed = true) {
         $q = self::getTicketMatchesQuery($mail, $ignoreClosed);
 
         //TODO need a decision on how to manage this situation
@@ -153,7 +123,7 @@ class EmailHelper
         return $q;
     }
 
-    public static function getThreadTicketReffered(\PhpImap\IncomingMail $mail, $ignoreClosed = true) {
+    public static function getThreadTicketReffered(ImapMail $mail, $ignoreClosed = true) {
         $q = self::getTicketMatchesQuery($mail, $ignoreClosed);
 
         //TODO need a decision on how to manage this situation
@@ -163,7 +133,7 @@ class EmailHelper
         return $q;
     }
 
-    public static function getTicketMatchesQuery(\PhpImap\IncomingMail $mail, $ignoreClosed = true) {
+    public static function getTicketMatchesQuery(ImapMail $mail, $ignoreClosed = true) {
         $subject = new MailSubject(['subject' => $mail->subject]);
         $subjectTicketId = self::getTicketIdFromSubject($subject);
 

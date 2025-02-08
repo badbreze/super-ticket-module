@@ -2,6 +2,7 @@
 namespace super\ticket\models\forms;
 
 use elitedivision\amos\attachments\behaviors\FileBehavior;
+use super\ticket\helpers\UserHelper;
 use super\ticket\models\SuperTicketEvent;
 use Yii;
 use yii\base\Model;
@@ -65,6 +66,7 @@ class TicketCommentForm extends Model
                 $this->ticket_id,
                 SuperTicketEvent::TYPE_COMMENT,
                 $this->body,
+                UserHelper::getCurrentUser()->id,
                 $metadata
             );
         }

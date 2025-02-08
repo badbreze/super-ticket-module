@@ -37,7 +37,7 @@ class NotificationController extends Controller
                 $this->sendNotification($notification);
             } catch (\Exception $e) {
                 //Debug
-                Console::stdout("Unable To Send: {$e->getMessage()}\n");
+                Console::stdout("Unable To Send: {$e->getMessage()} \n {$e->getTraceAsString()}\n");
             }
         }
     }
@@ -76,15 +76,15 @@ class NotificationController extends Controller
         //Drop from CC the first recipient
         unset($recipients[0]);
 
-        Console::stdout("To: {$mainRecipient->email}\n");
-
-        $composition = $mailer
-            ->compose("@vendor/badbreze/super-ticket-system/src/views/mail/{$event->type}", [
-                'event' => $event
-            ])
-            ->setFrom($domainMailer->from ?: 'no-reply@super.ticket');
-
         if ($mainRecipient) {
+            Console::stdout("To: {$mainRecipient->email}\n");
+
+            $composition = $mailer
+                ->compose("@vendor/badbreze/super-ticket-system/src/views/mail/{$event->type}", [
+                    'event' => $event
+                ])
+                ->setFrom($domainMailer->from ?: 'no-reply@super.ticket');
+
             $composition->setTo($mainRecipient->email);
         } elseif (Yii::$app instanceof Application) {
             Yii::$app->session->addFlash('error', Yii::t('super', 'No Recipients For Notification'));
