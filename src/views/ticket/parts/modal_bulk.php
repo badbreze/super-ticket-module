@@ -9,14 +9,53 @@ use yii\helpers\Html;
  * @var $model \super\ticket\models\forms\SuperTicketBulkForm
  */
 
-\yii\widgets\Pjax::begin(['id' => 'pjax_bulk_edit']);
+$js = <<<JS
+ jQuery(document).ready(function () {
+        jQuery('body').on('beforeSubmit', 'form#recipient-form', function () {
+            var form = jQuery(this);
+            var checkboxex = jQuery('#ticket-grid');
+            
+            // return false if form still have some validation errors
+            if (form.find('.has-error').length) 
+            {
+                return false;
+            }
+            
+            var data = form.serialize();
+            data += "&" + jQuery('.ticket-selection:checked', checkboxex).serialize();
+            
+            // submit form
+            jQuery.ajax({
+                url    : form.attr('action'),
+                type   : 'post',
+                data   : data,
+                success: function (response) {
+                    debugger;
+                    var getupdatedata = jQuery(response).find('#filter_id_test');
+                    // jQuery.pjax.reload('#note_update_id'); for pjax update
+                    jQuery('#yiiikap').html(getupdatedata);
+                    //console.log(getupdatedata);
+                },
+                error  : function () {
+                    console.log('internal server error');
+                }
+            });
+            
+            return false;
+         });
+    });
+JS;
+
+$this->registerJs($js);
+
+
 ?>
     <div class="super-invte-form">
 
         <?php $form = ActiveForm::begin([
                 'id' => 'recipient-form',
                 'options' => ['data-pjax' => true],
-                'action' => ['/super/ticket/bulk-edit']
+                'action' => ['/super/api/ticket/bulk-edit']
             ]
         );
         ?>
@@ -52,6 +91,3 @@ use yii\helpers\Html;
         </div>
 
     </div>
-<?php
-\yii\widgets\Pjax::end();
-?>

@@ -1,6 +1,7 @@
 <?php
 namespace super\ticket\models\forms;
 
+use super\ticket\helpers\UserHelper;
 use super\ticket\models\SuperTicketStatus;
 use Yii;
 use yii\base\Model;
@@ -10,6 +11,7 @@ use yii\base\Model;
  */
 class SuperTicketBulkForm extends Model
 {
+    public array $selection;
     public $status;
 
     /**
@@ -18,7 +20,8 @@ class SuperTicketBulkForm extends Model
     public function rules()
     {
         return [
-            [['status'], 'required'],
+            [['status', 'selection'], 'required'],
+            [['selection'], 'canUpdate'],
         ];
     }
 
@@ -35,7 +38,14 @@ class SuperTicketBulkForm extends Model
     {
         return [
             'status' => Yii::t('super', 'Status'),
+            'selection' => Yii::t('super', 'Selection'),
         ];
+    }
+
+    public function canUpdate($attribute) {
+        $user = UserHelper::getCurrentUser();
+
+        return true;
     }
 
 }

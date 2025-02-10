@@ -1,6 +1,8 @@
 <?php
 namespace super\ticket\modules\api\controllers;
 
+use super\ticket\helpers\UserHelper;
+use super\ticket\models\forms\SuperTicketBulkForm;
 use super\ticket\modules\api\base\ActiveController;
 
 /**
@@ -14,7 +16,7 @@ class TicketController extends ActiveController
     public function actions()
     {
         return [
-            'index' => [
+            /*'index' => [
                 'class' => \super\ticket\modules\api\actions\ticket\IndexAction::class,
                 'modelClass' => $this->modelClass,
                 'checkAccess' => [$this, 'checkAccess'],
@@ -43,7 +45,15 @@ class TicketController extends ActiveController
             ],
             'options' => [
                 'class' => 'yii\rest\OptionsAction',
-            ],
+            ],*/
         ];
+    }
+
+    public function actionBulkEdit() {
+        $model = new SuperTicketBulkForm();
+
+        if($model->load(\Yii::$app->request->post()) && $model->validate()) {
+            print_r("OK");
+        }
     }
 }

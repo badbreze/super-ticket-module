@@ -36,6 +36,7 @@ use yii\helpers\Html;
         <?= GridView::widget([
             'dataProvider' => $dataProvider,
             'layout' => "{summary}\n{pager}\n{items}\n{pager}",
+            'id' => 'ticket-grid',
             'pager' => [
                 'class' => yii\widgets\LinkPager::className(),
                 'firstPageLabel' => Yii::t('app', 'First'),
@@ -57,6 +58,10 @@ use yii\helpers\Html;
             'columns' => [
                 [
                     'class' => 'yii\grid\CheckboxColumn',
+                    'name' => 'SuperTicketBulkForm[selection]',
+                    'checkboxOptions' => [
+                            'class' => 'ticket-selection'
+                    ]
                     //'template' => $actionColumnTemplateString,
                 ],
                 [
