@@ -38,7 +38,7 @@ $statuses = StatusHelper::getAvailableStatuses();
         <a href="#" class="btn btn-outline-dark float-right">
             <i class="fas fa-ellipsis-h"></i>
         </a>
-<?= $ticket->getMetadata()->createCommand()->rawSql ?>
+
         <p class="card-description mt-3">
             <?= Yii::t('super', 'Opened by <code>{name}</code> in {date}', [
                 'name' => $ticket->superUser->fullName,

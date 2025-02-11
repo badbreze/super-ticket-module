@@ -60,23 +60,23 @@ class EmailHelper
      * @return array
      */
     public static function getContactFromEmail(ImapMail $email) {
-        $nameParts =  explode(' ', $email->mail->fromName);
+        $nameParts =  explode(' ', $email->fromName);
         $name = reset($nameParts);
         unset($nameParts[0]);
 
         $result = [
             'name' => $name,
             'surname' => trim(join(' ', $nameParts)),
-            'email' => $email->mail->fromAddress,
+            'email' => $email->fromAddress,
             'phone' => null,
-            'host' => $email->mail->fromHost,
+            'host' => $email->fromHost,
         ];
 
         return $result;
     }
 
     public static function getFollowersFromEmail(ImapMail $email) {
-        $ccs = $email->mail->cc;
+        $ccs = $email->cc;
         $result = [];
 
         foreach ($ccs as $mail => $fullName) {
@@ -89,7 +89,7 @@ class EmailHelper
                 'surname' => trim(join(' ', $nameParts)),
                 'email' => $mail,
                 'phone' => null,
-                'host' => $email->mail->fromHost,
+                'host' => $email->fromHost,
             ];
         }
 

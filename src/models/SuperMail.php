@@ -3,7 +3,7 @@
 namespace super\ticket\models;
 
 use super\ticket\db\ActiveRecord;
-use super\ticket\base\MailBox;
+use super\ticket\base\ImapMailBox;
 use super\ticket\modules\console\helpers\EmailHelper;
 use Yii;
 
@@ -130,7 +130,7 @@ class SuperMail extends ActiveRecord
             return true;
         }
 
-        $mailbox = new MailBox([
+        $mailbox = new ImapMailBox([
                                    'super_mail' => $this
                                ]);
 

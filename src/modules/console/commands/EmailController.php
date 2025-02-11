@@ -12,7 +12,7 @@ use super\ticket\models\SuperTicket;
 use super\ticket\models\SuperTicketEvent;
 use super\ticket\models\SuperTicketFollower;
 use super\ticket\models\SuperTicketLink;
-use super\ticket\base\MailBox;
+use super\ticket\base\ImapMailBox;
 use super\ticket\modules\console\helpers\EmailHelper;
 use yii\base\Exception;
 use yii\console\Controller;
@@ -40,7 +40,7 @@ class EmailController extends Controller
 
         foreach ($mailSourcesQuery->all() as $mailSource) {
             try {
-                Console::stdout("Processing: {$mailSource->name}\n");
+                Console::stdout("Processing: {$mailSource->name} ({$mailSource->address})\n");
                 $this->processMailBox($mailSource);
             } catch (\Exception $e) {
                 //Debug
@@ -51,7 +51,7 @@ class EmailController extends Controller
 
     public function processMailBox(SuperMail $source)
     {
-        $mailbox = new MailBox([
+        $mailbox = new ImapMailBox([
             'super_mail' => $source
         ]);
 
@@ -129,7 +129,11 @@ class EmailController extends Controller
             'team_id' => $source->team_id,
             'domain_id' => $source->domain_id,
             'super_user_id' => $owner->id,
-            'metadata' => serialize($mail)
+            'metadata' => [
+                'id' => $mail->messageId,
+                'date' => $mail->date->format('Y-m-d H:i:s'),
+                'cc' => json_encode($mail->cc),
+            ]
         ]);
 
         //Calculate Due Date

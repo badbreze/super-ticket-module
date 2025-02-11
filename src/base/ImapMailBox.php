@@ -8,7 +8,10 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Console;
 use PhpImap\Imap;
 
-class MailBox extends \yii\base\BaseObject
+/**
+ * @property array $mailIds
+ */
+class ImapMailBox extends \yii\base\BaseObject
 {
     public SuperMail $super_mail;
     private \PhpImap\Mailbox $_connection;
@@ -59,8 +62,6 @@ class MailBox extends \yii\base\BaseObject
         if (!is_null($this->_mailIds)) {
             return $this->_mailIds;
         }
-
-        $dateRange = date("d M Y", strToTime("-1 days"));
 
         $boxMailCheck = $this->_connection->checkMailbox();
 

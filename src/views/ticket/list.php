@@ -24,11 +24,11 @@ use yii\helpers\Html;
 
             <div class="dropdown-menu shadow-sm border-0" style="text-align: center">
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#bulk-edit-modal" tabindex="-1">
-                   Modifica
+                   <?= Yii::t('super', 'Edit') ?>
                 </a>
 
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#bulk-delete-modal" tabindex="-1">
-                    Elimina
+                    <?= Yii::t('super', 'Delete') ?>
                 </a>
             </div>
         </div>

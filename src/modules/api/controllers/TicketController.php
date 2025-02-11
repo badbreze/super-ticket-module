@@ -53,7 +53,17 @@ class TicketController extends ActiveController
         $model = new SuperTicketBulkForm();
 
         if($model->load(\Yii::$app->request->post()) && $model->validate()) {
-            print_r("OK");
+            return $model->updateTickets();
+        }
+
+        return $model->errors;
+    }
+
+    public function actionDeleteBulk() {
+        $model = new SuperTicketBulkForm();
+
+        if($model->load(\Yii::$app->request->post()) && $model->validate()) {
+            return $model->deleteTickets();
         }
     }
 }

@@ -9,6 +9,10 @@ use PhpImap\IncomingMail;
  * @property string $messageId
  * @property string $subject
  * @property string $content
+ * @property string|null $fromName
+ * @property string|null $fromAddress
+ * @property string|null $fromHost
+ * @property string[]|null $cc
  * @property \DateTime $date
  */
 class ImapMail extends \yii\base\BaseObject
@@ -46,5 +50,21 @@ class ImapMail extends \yii\base\BaseObject
 
     public function getDate() {
         return new \DateTime($this->mail->date);
+    }
+
+    public function getFromName() {
+        return $this->mail->fromName;
+    }
+
+    public function getFromAddress() {
+        return $this->mail->fromAddress;
+    }
+
+    public function getFromHost() {
+        return $this->mail->fromHost;
+    }
+
+    public function getCc() {
+        return $this->mail->cc;
     }
 }

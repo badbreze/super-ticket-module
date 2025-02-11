@@ -26,7 +26,8 @@ class NotificationController extends Controller
     public function actionProcess()
     {
         $notifications = SuperTicketEventNotification::find()
-        ->andWhere(['status' => SuperTicketEventNotification::STATUS_PENDING]);
+        ->andWhere(['status' => SuperTicketEventNotification::STATUS_PENDING])
+        ->limit(20);
 
         //Debug
         Console::stdout("Found {$notifications->count()} Notifications to Send\n");
@@ -37,7 +38,7 @@ class NotificationController extends Controller
                 $this->sendNotification($notification);
             } catch (\Exception $e) {
                 //Debug
-                Console::stdout("Unable To Send: {$e->getMessage()} \n {$e->getTraceAsString()}\n");
+                Console::stdout("Unable To Send: {$e->getMessage()} \n");
             }
         }
     }
