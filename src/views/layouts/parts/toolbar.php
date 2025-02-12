@@ -16,6 +16,7 @@ $statuses = StatusHelper::getAvailableStatuses();
 $currentStatus = StatusHelper::getCurrentStatus();
 ?>
 <header class="navbar navbar-expand flex-column flex-md-row bd-navbar mb-0 enjoy-toolbar">
+    <?php if(!(Yii::$app->controller->id == 'default' && Yii::$app->controller->action->id == 'index')) : ?>
     <div class="mx-auto mr-md-auto ml-sm-0">
         <ul class="navbar-nav bd-navbar-nav flex-row">
             <li class="nav-item dropdown">
@@ -39,6 +40,7 @@ $currentStatus = StatusHelper::getCurrentStatus();
             </li>
         </ul>
     </div>
+    <?php endif; ?>
 
     <div class="navbar-brand navbar-nav-scroll mx-auto">
         <a href="/super">Super Ticket</a>

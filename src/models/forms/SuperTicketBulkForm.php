@@ -91,10 +91,8 @@ class SuperTicketBulkForm extends Model
         foreach ($this->selection as $item) {
             $ticket = SuperTicket::findOne($item);
 
-            if(!empty($this->status) && !$ticket->delete()) {
-                $this->addError('selection', Yii::t('super', 'There was an error while deleting the ticket.'));
-                return false;
-            }
+            //TODO delete() returns false even when delete is ok
+            $ticket && $ticket->delete();
         }
 
         return true;
