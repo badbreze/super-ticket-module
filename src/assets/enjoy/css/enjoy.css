@@ -29,6 +29,11 @@
     background-color: #b71b1a1f;
 }
 
+.ticket-image-preview {
+    max-width: 150px;
+    max-height: 100px;
+}
+
 @keyframes MOVE-BG-EXPIRED {
     from {
         background-position: 0 0;

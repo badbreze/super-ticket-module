@@ -60,11 +60,13 @@ $statuses = StatusHelper::getAvailableStatuses();
                     ?>
                 </div>
                 <?= $this->render('parts/relations', ['ticket' => $ticket]); ?>
-                <?php foreach ($ticket->events as $event): ?>
-                    <div class="mb-3">
-                        <?= \super\ticket\helpers\EventHelper::renderEvent($event); ?>
-                    </div>
-                <?php endforeach; ?>
+                <div class="mt-4">
+                    <?php foreach ($ticket->events as $event): ?>
+                        <div class="mb-3">
+                            <?= \super\ticket\helpers\EventHelper::renderEvent($event); ?>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
         </div>
         <div class="ticket-comment-area">

@@ -63,6 +63,7 @@ class ImapMailBox extends \yii\base\BaseObject
             return $this->_mailIds;
         }
 
+
         $boxMailCheck = $this->_connection->checkMailbox();
 
         if (!is_object($boxMailCheck) || !isset($boxMailCheck->Nmsgs)) {
