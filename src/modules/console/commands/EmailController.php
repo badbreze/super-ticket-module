@@ -212,9 +212,6 @@ class EmailController extends Controller
         //Attachments from mail
         if(!empty($mail->getAttachments())) {
             foreach ($mail->getAttachments() as $attachment) {
-                echo "ATTACH:::\n";
-                print_r($attachment->name);
-                echo "\n:::ENDATTACH\n\n";
                 AttachmentsHelper::attachFile($attachment, $comment);
             }
         }

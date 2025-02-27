@@ -7,6 +7,7 @@ use super\ticket\models\SuperTicketEvent;
 use Yii;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
+use yii\web\UploadedFile;
 
 /**
  * ContactForm is the model behind the contact form.
@@ -40,7 +41,7 @@ class TicketCommentForm extends Model
             [['ticket_id'], 'integer'],
             [['body'], 'string'],
             [['id'], 'safe'],
-            [['attachments'], 'file', 'maxFiles' => 0, 'maxSize' => 10240],
+            [['attachments'], 'file', 'maxFiles' => 0, 'maxSize' => 1024*1024*10],
         ];
     }
 
@@ -62,13 +63,19 @@ class TicketCommentForm extends Model
                 'recipients' => $this->recipients,
             ];
 
-            return SuperTicketEvent::createTicketEvent(
+            //What a shame
+            $_FILES['SuperTicketEvent'] = $_FILES['TicketCommentForm'];
+            UploadedFile::reset();
+
+            $event = SuperTicketEvent::createTicketEvent(
                 $this->ticket_id,
                 SuperTicketEvent::TYPE_COMMENT,
                 $this->body,
                 UserHelper::getCurrentUser()->id,
                 $metadata
             );
+
+            return $event;
         }
 
         return false;

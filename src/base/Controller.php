@@ -17,7 +17,7 @@ class Controller extends \yii\web\Controller
     {
         parent::init();
 
-        if(!UserHelper::isCurrentUserAvailable()) {
+        if(\Yii::$app->user->id && !UserHelper::isCurrentUserAvailable()) {
             $initAction = 'super/default/init-user';
 
             if(\Yii::$app->requestedRoute != $initAction) {

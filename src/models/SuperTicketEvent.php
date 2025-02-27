@@ -138,6 +138,15 @@ class SuperTicketEvent extends ActiveRecord
         return $this->hasOne(SuperUser::class, ['user_id' => 'created_by']);
     }
 
+    /**
+     * @param $ticket_id
+     * @param $type
+     * @param $body
+     * @param $super_user_id
+     * @param $metadata
+     * @return SuperTicketEvent
+     * @throws \Exception
+     */
     public static function createTicketEvent($ticket_id, $type, $body, $super_user_id = null, $metadata = null)
     {
         $event = new SuperTicketEvent();

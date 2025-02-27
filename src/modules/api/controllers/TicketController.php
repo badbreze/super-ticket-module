@@ -49,6 +49,10 @@ class TicketController extends ActiveController
         ];
     }
 
+    public function actionIndex() {
+        return "OK";
+    }
+
     public function actionBulkEdit() {
         $model = new SuperTicketBulkForm();
 

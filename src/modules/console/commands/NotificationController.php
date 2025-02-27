@@ -107,6 +107,12 @@ class NotificationController extends Controller
             ->setCc(ArrayHelper::map($recipients, 'email', 'fullName'))
             ->setSubject($subject);
 
+        foreach ($event->attachments as $attachment) {
+            $composition->attach($attachment->getPath(), [
+                'fileName' => $attachment->name.'.'.$attachment->type
+            ]);
+        }
+
         $result = $composition->send();
 
         if ($result) {

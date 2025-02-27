@@ -29,6 +29,7 @@ use super\ticket\helpers\HtmlHelper;
                 'date' => $event->created_at
             ]); ?>
         </div>
+        <i class="fa-solid fa-circle-info" alt="Test"></i>
         <hr class="mt-1" />
     </div>
     <blockquote class="ticket-comment-body">
