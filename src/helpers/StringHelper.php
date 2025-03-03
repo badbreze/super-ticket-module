@@ -54,7 +54,7 @@ class StringHelper
 
     public static function splitMailReply($content) {
         //Specific mail reply splitter
-        $result = preg_split("/-----[^-]/im", $content);
+        $result = preg_split("/[^-]--REPLY ABOVE THIS LINE--[^-]/im", $content);
         return $result;
     }
 }

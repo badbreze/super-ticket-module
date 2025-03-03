@@ -13,7 +13,7 @@ $template = $event->ticket->domain->mailer->mail_template;
 
 if ($event->type == SuperTicketEvent::TYPE_COMMENT) {
     //REPLY Placeholder
-    echo "-----\n";
+    echo "--REPLY ABOVE THIS LINE--\n";
     echo "<br/>";
 
     echo StringHelper::parse($template, ['content' => $content, 'event' => $event]);
