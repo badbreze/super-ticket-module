@@ -77,6 +77,11 @@ jQuery(document).ready(function() {
                                 var subelement = jQuery('<a class="nav-link ml-3"/>');
                                 subelement.attr('href', '/t/'+value.id);
                                 subelement.text(value.name);
+
+                                var statusIcon = jQuery('<i class="fas status-icon-'+value.status+'"/>');
+
+                                subelement.prepend(statusIcon);
+
                                 //jQuery('#globalSearchResults').append('<a href="/platforms/platforms/' + value.id + '" class="dropdown-item" id="' + value.id + '">' + value.name + '</a>');
                                 subblock.append(subelement);
                             });

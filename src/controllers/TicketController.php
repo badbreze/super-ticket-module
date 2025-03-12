@@ -206,6 +206,7 @@ class TicketController extends Controller
             ];
 
             $tickets = SuperTicket::find()
+                ->joinWith('status')
                 ->andWhere([
                                'AND',
                                ['like', 'subject', $q],
@@ -217,6 +218,7 @@ class TicketController extends Controller
                 $element['platforms'][] = [
                     'id' => $ticket['id'],
                     'name' => $ticket['subject'],
+                    'status' => $ticket['status']['identifier'],
                 ];
             }
 

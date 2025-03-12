@@ -46,3 +46,13 @@
 .dropdown-menu hr:last-child {
     display: none;
 }
+
+.status-icon-closed::before {
+    content:"\f00c";
+    margin-right: 5px;
+}
+
+.status-icon-open::before {
+    content:"\f00d";
+    margin-right: 5px;
+}

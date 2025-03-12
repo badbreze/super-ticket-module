@@ -57,4 +57,5 @@ return [
     'You Must select at least one item' => 'Devi selezionare almeno un elemento',
     'You\'re about to delete tickets, this operation is irreversible' => 'Stai per cancellare dei ticket, questa operazione è Irreversibile',
     'Designated Agent' => 'Operatore Designato',
+    'Add Domain' => 'Aggiungi Contesto',
 ];
