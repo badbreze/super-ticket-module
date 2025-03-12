@@ -11,7 +11,7 @@ use super\ticket\helpers\RouteHelper;
 $profile = Yii::$app->user->identity->profile;
 
 $currentDomain = DomainHelper::getCurrentDomain();
-$domains = DomainHelper::getAvailableDomains();
+$customers = DomainHelper::getAvailableCustomers();
 $statuses = StatusHelper::getAvailableStatuses();
 $currentStatus = StatusHelper::getCurrentStatus();
 ?>
@@ -24,20 +24,19 @@ $currentStatus = StatusHelper::getCurrentStatus();
                     <i class="fab fa-avianex"></i> <?= \super\ticket\helpers\DomainHelper::getCurrentDomainName() ?: Yii::t('super', 'General'); ?>
                 </a>
                 <div class="dropdown-menu">
-                    <?php foreach ($domains as $availableDomain): ?>
-                        <a href="<?= TicketHelper::getListUrl(null, $availableDomain->id); ?>" class="dropdown-item">
-                            <i class="mdi mdi-file-pdf text-primary"></i>
-                            <h6>
-                                <?= $availableDomain->name; ?>
-                                <?php if($availableDomain->getNewTickets()->count()) : ?>
-                                    <span class="badge badge-primary"><?= $availableDomain->getNewTickets()->count(); ?></span>
-                                <?php endif; ?>
-                                <br/>
-                                <small class="text-muted">
-                                    <?= $availableDomain->customer->name; ?>
+                    <?php foreach ($customers as $availableCustomer): ?>
+                        <h6 class="dropdown-header font-weight-bold"><?= $availableCustomer->name; ?></h6>
+                        <?php foreach ($availableCustomer->domains as $availableDomain): ?>
+                            <a href="<?= TicketHelper::getListUrl(null, $availableDomain->id); ?>" class="dropdown-item">
+                                <small>
+                                    <?= $availableDomain->name; ?>
+                                    <?php if($availableDomain->getNewTickets()->count()) : ?>
+                                        <span class="badge badge-primary"><?= $availableDomain->getNewTickets()->count(); ?></span>
+                                    <?php endif; ?>
                                 </small>
-                            </h6>
-                        </a>
+                            </a>
+                        <?php endforeach; ?>
+                        <hr/>
                     <?php endforeach; ?>
                 </div>
             </li>

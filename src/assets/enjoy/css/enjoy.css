@@ -42,3 +42,7 @@
         background-position: -400px -400px;
     }
 }
+
+.dropdown-menu hr:last-child {
+    display: none;
+}

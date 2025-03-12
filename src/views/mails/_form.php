@@ -34,7 +34,7 @@ use super\ticket\models\SuperMail;
     );
     ?>
 
-    <div class="section">
+    <div class="section pb-3">
         <?php $this->beginBlock('main'); ?>
 
         <p>
@@ -169,6 +169,13 @@ use super\ticket\models\SuperMail;
             ]
         );
         ?>
+
+        <div class="float-right">
+            <?= Html::a(
+                Yii::t('app', 'Cancel'),
+                \yii\helpers\Url::previous(),
+                ['class' => 'btn btn-info']) ?>
+        </div>
 
         <?php ActiveForm::end(); ?>
 

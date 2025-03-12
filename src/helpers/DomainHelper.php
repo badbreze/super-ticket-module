@@ -2,10 +2,23 @@
 
 namespace super\ticket\helpers;
 
+use super\ticket\models\SuperCustomer;
 use super\ticket\models\SuperDomain;
 
 class DomainHelper
 {
+    /**
+     * TODO manage permissions
+     * @return array|\yii\db\ActiveRecord[]
+     * @throws \yii\base\InvalidConfigException
+     */
+    public static function getAvailableCustomers() {
+        return SuperCustomer::find()
+            ->joinWith('domains')
+            ->orderBy(['super_customer.name' => SORT_ASC, 'super_domain.name' => SORT_ASC])
+            ->all();
+    }
+
 
     /**
      * @return null|SuperDomain[]
