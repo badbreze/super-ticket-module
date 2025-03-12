@@ -86,22 +86,25 @@ $statuses = StatusHelper::getAvailableStatuses();
                 ]);
                 ?>
 
+                <?php \yii\widgets\Pjax::begin(['id' => 'pjax_recipients']); ?>
                 <div class="form-row">
-                    <div class="col-11">
-                        <?= $form->field($commentModel, 'recipients')->widget(
-                            Select2Widget::className(),
-                            [
-                                'items' => ArrayHelper::map($ticket->followable, 'id', 'fullName'),
-                                'multiple' => true,
-                                'bootstrap' => false
-                            ]
-                        ); ?>
-                    </div>
+                        <div class="col-11">
+                            <?= $form->field($commentModel, 'recipients')->widget(
+                                Select2Widget::className(),
+                                [
+                                    'items' => ArrayHelper::map($ticket->followable, 'id', 'fullName'),
+                                    'multiple' => true,
+                                    'bootstrap' => false
+                                ]
+                            ); ?>
+                        </div>
+
                     <a href="#" class="col mt-4" data-toggle="modal" data-target="#recipient-modal">
                         <i class="fa fa-plus"></i>
                         <?= Yii::t('super', 'Add Recipient'); ?>
                     </a>
                 </div>
+                <?php \yii\widgets\Pjax::end(); ?>
 
                 <?= $form->field($commentModel, 'body')->widget(TinyMce::className(), [
                     //'name' => 'test',

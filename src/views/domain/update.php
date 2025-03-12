@@ -9,7 +9,6 @@ use yii\helpers\Html;
  */
 
 $this->title = Yii::t('models', 'Super Domain');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('models', 'Super Domain'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = Yii::t('app', 'Edit');
 ?>
 <div class="giiant-crud super-domain-update">

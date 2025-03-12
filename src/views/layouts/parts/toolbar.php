@@ -29,6 +29,9 @@ $currentStatus = StatusHelper::getCurrentStatus();
                             <i class="mdi mdi-file-pdf text-primary"></i>
                             <h6>
                                 <?= $availableDomain->name; ?>
+                                <?php if($availableDomain->getNewTickets()->count()) : ?>
+                                    <span class="badge badge-primary"><?= $availableDomain->getNewTickets()->count(); ?></span>
+                                <?php endif; ?>
                                 <br/>
                                 <small class="text-muted">
                                     <?= $availableDomain->customer->name; ?>
@@ -63,9 +66,6 @@ $currentStatus = StatusHelper::getCurrentStatus();
                     </a>
                     <a class="dropdown-item" href="/super/customer" tabindex="-1">
                         <i class="fas fa-user-tie"></i> <?= Yii::t('super', 'Customers'); ?>
-                    </a>
-                    <a class="dropdown-item" href="/super/domain" tabindex="-1">
-                        <i class="fas fa-store"></i>  <?= Yii::t('super', 'Domains'); ?>
                     </a>
                     <a class="dropdown-item" href="/super/mails" tabindex="-1">
                         <i class="far fa-envelope"></i> <?= Yii::t('super', 'Mails'); ?>

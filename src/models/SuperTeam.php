@@ -77,6 +77,11 @@ class SuperTeam extends ActiveRecord
         ];
     }
 
+    public function __toString()
+    {
+        return $this->name;
+    }
+
     /**
      * Gets query for [[Agent]].
      *

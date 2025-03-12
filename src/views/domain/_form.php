@@ -18,25 +18,25 @@ use super\ticket\models\SuperMailer;
 <div class="super-domain-form">
 
     <?php $form = ActiveForm::begin([
-                                        'id' => 'SuperDomain',
-                                        'layout' => 'horizontal',
-                                        'enableClientValidation' => true,
-                                        'errorSummaryCssClass' => 'error-summary alert alert-danger',
-                                        'fieldConfig' => [
-                                            'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{error}\n{endWrapper}",
-                                            'horizontalCssClasses' => [
-                                                'label' => 'col-sm-2',
-                                                #'offset' => 'col-sm-offset-4',
-                                                'wrapper' => 'col-sm-8',
-                                                'error' => '',
-                                                'hint' => '',
-                                            ],
-                                        ],
-                                    ]
+            'id' => 'SuperDomain',
+            'layout' => 'horizontal',
+            'enableClientValidation' => true,
+            'errorSummaryCssClass' => 'error-summary alert alert-danger',
+            'fieldConfig' => [
+                'template' => "{label}\n{beginWrapper}\n{input}\n{hint}\n{error}\n{endWrapper}",
+                'horizontalCssClasses' => [
+                    'label' => 'col-sm-2',
+                    #'offset' => 'col-sm-offset-4',
+                    'wrapper' => 'col-sm-8',
+                    'error' => '',
+                    'hint' => '',
+                ],
+            ],
+        ]
     );
     ?>
 
-    <div class="section">
+    <div class="section pb-3">
         <?php $this->beginBlock('main'); ?>
 
         <p>
@@ -145,6 +145,13 @@ use super\ticket\models\SuperMailer;
             ]
         );
         ?>
+
+        <div class="float-right">
+            <?= Html::a(
+                Yii::t('app', 'Cancel'),
+                \yii\helpers\Url::previous(),
+                ['class' => 'btn btn-info']) ?>
+        </div>
 
         <?php ActiveForm::end(); ?>
 

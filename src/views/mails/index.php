@@ -95,7 +95,10 @@ $actionColumnTemplateString = '<div class="action-buttons">' . $actionColumnTemp
                                          },
                                          'contentOptions' => ['nowrap' => 'nowrap']
                                      ],
+                                     'enabled:boolean',
                                      'name',
+                                     'address',
+                                     'team'
                                  ]
                              ]); ?>
     </div>

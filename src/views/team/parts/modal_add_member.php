@@ -1,63 +1,61 @@
 <?php
 
 use yii\web\View;
-use yii\bootstrap4\ActiveForm;
-use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
+use conquer\select2\Select2Widget;
 
 /**
  * @var $this View
  * @var $model \super\ticket\models\SuperTeam
  */
 
-\yii\widgets\Pjax::begin(['id' => 'pjax_add_member']);
+$js = <<<JS
+jQuery('#add-member-btn').on('click', function() {
+    var items = jQuery('#add-member-form').val();
+    var data = {
+        members: items
+    };
+    
+    jQuery.ajax({
+        url    : '/super/api/teams/add-member?team_id={$model->id}',
+        type   : 'post',
+        data   : data,
+        success: function (response) {
+            if(response == true) {
+                //Close modal
+                jQuery('#members-modal').modal('hide');
+                
+                //Reload member form
+                jQuery.pjax.reload({container: '#member-list'});
+            }
+        },
+        error  : function () {
+            console.log('internal server error');
+        }});
+});
+JS;
+
+$this->registerJs($js);
 ?>
-<?php if ($model->id) : ?>
-    <div class="alert alert-success" role="alert">
-        <?= Yii::t('super', 'Recipient Invited'); ?>
-    </div>
 
-    <a class="btn btn-success " data-toggle="modal" data-target="#recipient-modal">
-        <?= Yii::t('super', 'Close'); ?>
-    </a>
-<?php else : ?>
-    <div class="super-invte-form">
-
-        <?php $form = ActiveForm::begin([
-                'id' => 'recipient-form',
-                'options' => ['data-pjax' => true],
-                'action' => ['/super/ticket/add-recipient', 'ticket_id' => $ticket->id]
-            ]
-        );
-        ?>
-
-        <div class="">
-            <p>
-
-                <?= $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
-                <?= $form->field($model, 'surname')->textInput(['maxlength' => true]) ?>
-                <?= $form->field($model, 'phone')->textInput(['maxlength' => true]) ?>
-                <?= $form->field($model, 'email')->textInput(['maxlength' => true]) ?>
-
-            </p>
-
-            <?php echo $form->errorSummary($model); ?>
-
-            <?= Html::submitButton(
-                '<span class="glyphicon glyphicon-check"></span> ' .
-                Yii::t('super', 'Add'),
-                [
-                    'id' => 'save-' . $model->formName(),
-                    'class' => 'btn btn-success'
+<div class="row">
+    <div class="col-12 mb-3">
+        <?= Select2Widget::widget(
+            [
+                'name' => 'team-member',
+                'id' => 'add-member-form',
+                'items' => ArrayHelper::map(\super\ticket\models\SuperUser::find()->all(), 'id', 'fullName'),
+                'multiple' => true,
+                'bootstrap' => false,
+                'settings' => [
+                    'dropdownParent' => '#members-modal',
+                    'dropdownAutoWidth' => true,
+                    'width' => '100%'
                 ]
-            );
-            ?>
-
-            <?php ActiveForm::end(); ?>
-
-        </div>
-
+            ]); ?>
     </div>
-<?php endif; ?>
-<?php
-\yii\widgets\Pjax::end();
-?>
+</div>
+
+<a class="btn btn-info " id="add-member-btn">
+    <?= Yii::t('super', 'Add'); ?>
+</a>

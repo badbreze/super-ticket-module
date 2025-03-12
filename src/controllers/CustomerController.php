@@ -72,6 +72,8 @@ class CustomerController extends Controller
      */
     public function actionUpdate($id)
     {
+        Url::remember();
+
         $model = $this->findModel($id);
 
         if ($model->load(\Yii::$app->request->post()) && $model->save()) {

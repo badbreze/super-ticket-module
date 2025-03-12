@@ -15,48 +15,6 @@ jQuery(document).ready(function() {
 
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
-    })
-
-    jQuery('body').on('keyup', function(e) {
-        e.stopPropagation();
-
-        if(jQuery('#filterBlocks').is(":focus")) {
-            return false;
-        }
-
-        var str = jQuery('#filterBlocks').val();
-
-        if((e.keyCode >= 48 && e.keyCode <= 90) || e.keyCode == 32) {
-            str = str + e.key;
-        } else if(e.keyCode == 8) {
-            str = str.substring(0, str.length - 1);
-        }
-        jQuery('#filterBlocks').val(str).trigger('keyup');
-        jQuery('#filterBlocks').focus();
-    });
-
-    jQuery('#filterBlocks').on('keyup clear change search', function(e) {
-        e.stopPropagation();
-
-        var input = jQuery(this);
-        var query = input.val().toLowerCase();
-        var projects = jQuery('.blocks');
-
-        if(input.val() != "") {
-            projects.find('.block:not(.d-none)').addClass('d-none');
-        } else {
-            //Clean
-            projects.find('.block.d-none').removeClass('d-none');
-        }
-
-        jQuery(".block", projects).each(function() {
-            var content = jQuery(this).text();
-            var has = jQuery(this).text().toLowerCase().indexOf(query);
-
-            if(has !== -1) {
-                jQuery(this).removeClass('d-none');
-            }
-        });
     });
 
     jQuery('.linked-block').on('click', function() {

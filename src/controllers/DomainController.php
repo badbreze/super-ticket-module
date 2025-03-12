@@ -23,36 +23,18 @@ class DomainController extends Controller
      */
     public $enableCsrfValidation = false;
 
-
-    /**
-     * Lists all SuperDomain models.
-     * @return mixed
-     */
-    public function actionIndex()
-    {
-        $dataProvider = new \yii\data\ActiveDataProvider([
-                                                             'query' => SuperDomain::find(),
-                                                         ]);
-
-        Tabs::clearLocalStorage();
-
-        Url::remember();
-
-        return $this->render('index', [
-            'dataProvider' => $dataProvider,
-        ]);
-    }
-
-
     /**
      * Creates a new SuperDomain model.
      * If creation is successful, the browser will be redirected to the 'index' page.
      * @return mixed
      */
-    public function actionCreate()
+    public function actionCreate($customer_id)
     {
         $model = new SuperDomain;
         $mailer = new SuperMailer();
+
+        //Set Customer
+        $model->customer_id = $customer_id;
 
         $mailer->mail_template = '{{event.superUser.email}} {{content}}';
 

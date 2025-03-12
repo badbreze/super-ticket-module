@@ -226,28 +226,6 @@ class TicketController extends Controller
         return Json::encode($response);
     }
 
-    public function actionAddRecipient($ticket_id) {
-        $ticket = SuperTicket::findOne(['id' => $ticket_id]);
-
-        if (!$ticket) {
-            Yii::$app->session->addFlash('danger', \Yii::t('super', 'Cant Add Recipient'));
-            return $this->redirect(RouteHelper::toTicket($ticket_id));
-        }
-
-        $model = new SuperUser();
-        $model->domain_id = $ticket->domain_id;
-
-        if (!$model->load(Yii::$app->request->post()) || $model->save()) {
-            Yii::$app->session->addFlash('danger', \Yii::t('super', 'Cant Save Recipient'));
-            return $this->redirect(RouteHelper::toTicket($ticket_id));
-        }
-
-        return $this->render('parts/modal_recipient', [
-            'model' => $model,
-            'ticket' => $ticket,
-        ]);
-    }
-
     public function actionToggleFollow($ticket_id) {
         $ticket = SuperTicket::findOne(['id' => $ticket_id]);
 

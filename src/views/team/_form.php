@@ -84,18 +84,26 @@ use yii\grid\GridView;
 
         <?php $this->beginBlock('members'); ?>
 
-        <div class="table-responsive">
-            <?= GridView::widget([
-                'dataProvider' => $membersDataProvider,
-                'columns' => [
-                    'name',
-                    'surname',
-                    'email',
-                    'phone',
-                    'domain',
-                ]
-            ]); ?>
-        </div>
+
+        <a href="#" class="float-right mt-4" data-toggle="modal" data-target="#members-modal">
+            <i class="fa fa-plus"></i>
+            <?= Yii::t('super', 'Add Member'); ?>
+        </a>
+
+        <?php \yii\widgets\Pjax::begin(['id' => 'member-list']); ?>
+            <div class="table-responsive">
+                <?= GridView::widget([
+                    'dataProvider' => $membersDataProvider,
+                    'columns' => [
+                        'name',
+                        'surname',
+                        'email',
+                        'phone',
+                        'domain',
+                    ]
+                ]); ?>
+            </div>
+        <?php \yii\widgets\Pjax::end(); ?>
 
         <?php $this->endBlock(); ?>
 
@@ -138,3 +146,8 @@ use yii\grid\GridView;
 
 </div>
 
+<?php \yii\bootstrap4\Modal::begin(['id' => 'members-modal', 'title' => Yii::t('super', 'Add Member')]); ?>
+<?= $this->render('parts/modal_add_member', [
+    'model' => $model,
+]); ?>
+<?php \yii\bootstrap4\Modal::end(); ?>

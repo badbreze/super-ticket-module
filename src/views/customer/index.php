@@ -59,46 +59,52 @@ $actionColumnTemplateString = '<div class="action-buttons">' . $actionColumnTemp
 
     <div class="table-responsive">
         <?= GridView::widget([
-                                 'dataProvider' => $dataProvider,
-                                 'pager' => [
-                                     'class' => yii\widgets\LinkPager::className(),
-                                     'firstPageLabel' => Yii::t('super', 'First'),
-                                     'lastPageLabel' => Yii::t('super', 'Last'),
-                                 ],
-                                 'tableOptions' => ['class' => 'table table-striped table-bordered table-hover'],
-                                 'headerRowOptions' => ['class' => 'x'],
-                                 'columns' => [
-                                     [
-                                         'class' => 'yii\grid\ActionColumn',
-                                         'template' => $actionColumnTemplateString,
-                                         'buttons' => [
-                                             'view' => function ($url, $model, $key) {
-                                                 $options = [
-                                                     'title' => Yii::t('super', 'View'),
-                                                     'aria-label' => Yii::t('super', 'View'),
-                                                     'data-pjax' => '0',
-                                                 ];
-                                                 return Html::a(
-                                                     '<span class="glyphicon glyphicon-eye-open"></span>',
-                                                     $url,
-                                                     $options
-                                                 );
-                                             }
-                                         ],
-                                         'urlCreator' => function ($action, $model, $key, $index) {
-                                             // using the column name as key, not mapping to 'id' like the standard generator
-                                             $params = is_array($key) ? $key : [
-                                                 $model->primaryKey()[0] => (string)$key
-                                             ];
-                                             $params[0] = \Yii::$app->controller->id ? \Yii::$app->controller->id . '/' . $action : $action;
-                                             return Url::toRoute($params);
-                                         },
-                                         'contentOptions' => ['nowrap' => 'nowrap']
-                                     ],
-                                     'name',
-                                     'description',
-                                 ]
-                             ]); ?>
+            'dataProvider' => $dataProvider,
+            'pager' => [
+                'class' => yii\widgets\LinkPager::className(),
+                'firstPageLabel' => Yii::t('super', 'First'),
+                'lastPageLabel' => Yii::t('super', 'Last'),
+            ],
+            'tableOptions' => ['class' => 'table table-striped table-bordered table-hover'],
+            'headerRowOptions' => ['class' => 'x'],
+            'columns' => [
+                [
+                    'class' => 'yii\grid\ActionColumn',
+                    'template' => $actionColumnTemplateString,
+                    'buttons' => [
+                        'view' => function ($url, $model, $key) {
+                            $options = [
+                                'title' => Yii::t('super', 'View'),
+                                'aria-label' => Yii::t('super', 'View'),
+                                'data-pjax' => '0',
+                            ];
+                            return Html::a(
+                                '<span class="glyphicon glyphicon-eye-open"></span>',
+                                $url,
+                                $options
+                            );
+                        }
+                    ],
+                    'urlCreator' => function ($action, $model, $key, $index) {
+                        // using the column name as key, not mapping to 'id' like the standard generator
+                        $params = is_array($key) ? $key : [
+                            $model->primaryKey()[0] => (string)$key
+                        ];
+                        $params[0] = \Yii::$app->controller->id ? \Yii::$app->controller->id . '/' . $action : $action;
+                        return Url::toRoute($params);
+                    },
+                    'contentOptions' => ['nowrap' => 'nowrap']
+                ],
+                'name',
+                'description',
+                [
+                    'label' => Yii::t('super', 'Domains'),
+                    'value' => function ($model) {
+                        return count($model->domains);
+                    }
+                ],
+            ]
+        ]); ?>
     </div>
 
 </div>
