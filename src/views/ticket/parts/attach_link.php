@@ -9,9 +9,9 @@ use super\ticket\helpers\HtmlHelper;
 <div class="card d-inline-flex mr-3" style="display: inline-block;vertical-align: top;">
     <?php if(in_array($attachment->type, ['jpg','jpeg', 'png', 'gif'])) : ?>
         <img class="card-img-top ticket-image-preview" src="<?= $attachment->getUrl(); ?>" alt="<?= $attachment->name.'.'.$attachment->type; ?>"/>
-        <p class="card-text" style="position:absolute;top: 0;background-color: rgba(0,0,0,0.4);color: white;padding: 4px;overflow-wrap: anywhere;">
+        <!--p class="card-text" style="position:absolute;top: 0;background-color: rgba(0,0,0,0.4);color: white;padding: 4px;overflow-wrap: anywhere;">
             <?= $attachment->name.'.'.$attachment->type; ?>
-        </p>
+        </p-->
     <?php else: ?>
         <b class="file-element d-block" style="text-align: center;margin-top: 10px;">
             <div class="file-icon" data-type="<?= $attachment->type; ?>"></div>

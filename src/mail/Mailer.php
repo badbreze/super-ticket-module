@@ -9,6 +9,17 @@ use yii\web\View;
 class Mailer extends \yii\swiftmailer\Mailer
 {
     /**
+     * @var \yii\base\View|array view instance or its array configuration.
+     */
+    private $_view = [];
+    /**
+     * @var string the directory containing view files for composing mail messages.
+     */
+    private $_viewPath;
+
+    private $_message;
+
+    /**
      * Renders the specified view with optional parameters and layout.
      * The view will be rendered using the [[view]] component.
      * @param string $view the view name or the [path alias](guide:concept-aliases) of the view file.
@@ -30,16 +41,6 @@ class Mailer extends \yii\swiftmailer\Mailer
 
 
     /**
-     * @var \yii\base\View|array view instance or its array configuration.
-     */
-    private $_view = [];
-    /**
-     * @var string the directory containing view files for composing mail messages.
-     */
-    private $_viewPath;
-
-
-    /**
      * Creates view instance from given configuration.
      * @param array $config view configuration.
      * @return View view instance.
@@ -53,8 +54,6 @@ class Mailer extends \yii\swiftmailer\Mailer
         return Yii::createObject($config);
     }
 
-    private $_message;
-
     /**
      * Creates a new message instance.
      * The newly created instance will be initialized with the configuration specified by [[messageConfig]].
@@ -65,10 +64,13 @@ class Mailer extends \yii\swiftmailer\Mailer
     protected function createMessage()
     {
         $config = $this->messageConfig;
+
         if (!array_key_exists('class', $config)) {
             $config['class'] = $this->messageClass;
         }
+
         $config['mailer'] = $this;
+
         return Yii::createObject($config);
     }
 
@@ -80,14 +82,17 @@ class Mailer extends \yii\swiftmailer\Mailer
     protected function saveMessage($message)
     {
         $path = Yii::getAlias($this->fileTransportPath);
+
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
+
         if ($this->fileTransportCallback !== null) {
             $file = $path . '/' . call_user_func($this->fileTransportCallback, $this, $message);
         } else {
             $file = $path . '/' . $this->generateMessageFileName();
         }
+
         file_put_contents($file, $message->toString());
 
         return true;
