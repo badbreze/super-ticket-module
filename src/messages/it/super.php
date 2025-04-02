@@ -58,4 +58,6 @@ return [
     'You\'re about to delete tickets, this operation is irreversible' => 'Stai per cancellare dei ticket, questa operazione è Irreversibile',
     'Designated Agent' => 'Operatore Designato',
     'Add Domain' => 'Aggiungi Contesto',
+    'Internal Note' => 'Nota Interna',
+    'Internal note by <code>{name}</code>' => 'Nota Interna di <code>{name}</code>',
 ];

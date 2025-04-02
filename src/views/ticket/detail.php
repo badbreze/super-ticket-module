@@ -88,16 +88,16 @@ $statuses = StatusHelper::getAvailableStatuses();
 
                 <?php \yii\widgets\Pjax::begin(['id' => 'pjax_recipients']); ?>
                 <div class="form-row">
-                        <div class="col-11">
-                            <?= $form->field($commentModel, 'recipients')->widget(
-                                Select2Widget::className(),
-                                [
-                                    'items' => ArrayHelper::map($ticket->followable, 'id', 'fullName'),
-                                    'multiple' => true,
-                                    'bootstrap' => false
-                                ]
-                            ); ?>
-                        </div>
+                    <div class="col-11">
+                        <?= $form->field($commentModel, 'recipients')->widget(
+                            Select2Widget::className(),
+                            [
+                                'items' => ArrayHelper::map($ticket->followable, 'id', 'fullName'),
+                                'multiple' => true,
+                                'bootstrap' => false
+                            ]
+                        ); ?>
+                    </div>
 
                     <a href="#" class="col mt-4" data-toggle="modal" data-target="#recipient-modal">
                         <i class="fa fa-plus"></i>
@@ -129,7 +129,16 @@ $statuses = StatusHelper::getAvailableStatuses();
                     ]
                 ])->label(false); ?>
 
-                <?= Html::submitButton(Yii::t('super', 'Send'), ['class' => 'btn btn-primary']) ?>
+                <?= Html::submitButton(Yii::t('super', 'Send'), [
+                    'class' => 'btn btn-primary',
+                    'name' => 'TicketCommentForm[type]',
+                    'value' => \super\ticket\models\SuperTicketEvent::TYPE_COMMENT,
+                ]) ?>
+                <?= Html::submitButton(Yii::t('super', 'Internal Note'), [
+                        'class' => 'btn btn-info', 'id' => 'save-note',
+                        'name' => 'TicketCommentForm[type]',
+                    'value' => \super\ticket\models\SuperTicketEvent::TYPE_NOTE,
+                ]) ?>
                 <?php /* Html::button(Yii::t('app', 'Send to Intranet'), ['class' => 'btn btn-info'])*/ ?>
                 <?php
                 ActiveForm::end();
@@ -139,8 +148,6 @@ $statuses = StatusHelper::getAvailableStatuses();
     </div>
 
 <?php \yii\bootstrap4\Modal::begin(['id' => 'recipient-modal', 'title' => Yii::t('super', 'Add Recipient')]); ?>
-<?= $this->render('parts/modal_recipient', [
-    'model' => new \super\ticket\models\SuperUser(),
-    'ticket' => $ticket,
-]); ?>
+<?= $this->render('parts/modal_recipient', ['model' => new \super\ticket\models\SuperUser(),
+    'ticket' => $ticket,]); ?>
 <?php \yii\bootstrap4\Modal::end(); ?>

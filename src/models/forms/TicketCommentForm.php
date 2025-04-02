@@ -20,6 +20,7 @@ class TicketCommentForm extends Model
     public $user_id;
     public $isNewRecord = true;
     public $recipients = [];
+    public $type = SuperTicketEvent::TYPE_COMMENT;
 
     public function behaviors()
     {
@@ -39,7 +40,7 @@ class TicketCommentForm extends Model
             // name, email, subject and body are required
             [['ticket_id', 'body', 'recipients'], 'required'],
             [['ticket_id'], 'integer'],
-            [['body'], 'string'],
+            [['body', 'type'], 'string'],
             [['id'], 'safe'],
             [['attachments'], 'file', 'maxFiles' => 0, 'maxSize' => 1024*1024*10],
         ];
@@ -69,7 +70,7 @@ class TicketCommentForm extends Model
 
             $event = SuperTicketEvent::createTicketEvent(
                 $this->ticket_id,
-                SuperTicketEvent::TYPE_COMMENT,
+                $this->type,
                 $this->body,
                 UserHelper::getCurrentUser()->id,
                 $metadata
