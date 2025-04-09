@@ -35,9 +35,18 @@ $statuses = StatusHelper::getAvailableStatuses();
                 </div>
             </div>
 
-            <a href="#" class="btn btn-outline-dark float-right">
-                <i class="fas fa-ellipsis-h"></i>
-            </a>
+            <div class="dropdown">
+                <button type="button" class="btn btn-outline-dark float-right"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-h"></i>
+                </button>
+                <div class="dropdown-menu" aria-labelledby="chengeStatusButton">
+                        <a href="#linkModal" class="dropdown-item">
+                            <i class="mdi mdi-file-pdf text-primary"></i>
+                            <?= Yii::t('super', 'External Link'); ?>
+                        </a> <!-- dropdown-item -->
+                </div> <!-- dropdown-menu -->
+            </div> <!-- dropdown -->
 
             <p class="card-description mt-3">
                 <?= Yii::t('super', 'Opened by <code>{name}</code> in {date}', [

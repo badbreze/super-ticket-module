@@ -13,6 +13,24 @@ class Module extends \yii\base\Module
 
     public $encriptionKey = null;
 
+    public $externalLinking = [
+        /*
+         'projects' => [
+            'name' => 'Projects',
+            'class' => 'super\ticket\external\Project',
+            'url' => [
+                'base' => '/projects/project',
+                'urlParams' => [
+                    'id' => 'id',
+                ],
+            ],
+            'searchFields' => [
+                'name' =>  Yii::t('super', 'Name'),
+            ],
+         ]
+         */
+    ];
+
     /**
      * {@inheritdoc}
      */
