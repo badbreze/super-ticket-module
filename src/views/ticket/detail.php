@@ -41,7 +41,7 @@ $statuses = StatusHelper::getAvailableStatuses();
                     <i class="fas fa-ellipsis-h"></i>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="chengeStatusButton">
-                        <a href="#linkModal" class="dropdown-item">
+                        <a href="#linkModal" class="dropdown-item" data-toggle="modal" data-target="#linking-modal">
                             <i class="mdi mdi-file-pdf text-primary"></i>
                             <?= Yii::t('super', 'External Link'); ?>
                         </a> <!-- dropdown-item -->
@@ -159,4 +159,10 @@ $statuses = StatusHelper::getAvailableStatuses();
 <?php \yii\bootstrap4\Modal::begin(['id' => 'recipient-modal', 'title' => Yii::t('super', 'Add Recipient')]); ?>
 <?= $this->render('parts/modal_recipient', ['model' => new \super\ticket\models\SuperUser(),
     'ticket' => $ticket,]); ?>
+<?php \yii\bootstrap4\Modal::end(); ?>
+
+<?php \yii\bootstrap4\Modal::begin(['id' => 'linking-modal', 'title' => Yii::t('super', 'Link Content')]); ?>
+<?= $this->render('parts/modal_link', [
+        'model' => $ticket
+]); ?>
 <?php \yii\bootstrap4\Modal::end(); ?>

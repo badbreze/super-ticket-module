@@ -25,7 +25,6 @@ class DomainController extends Controller
 
     /**
      * Creates a new SuperDomain model.
-     * If creation is successful, the browser will be redirected to the 'index' page.
      * @return mixed
      */
     public function actionCreate($customer_id)
@@ -46,7 +45,7 @@ class DomainController extends Controller
                 $mailer->domain_id = $model->id;
 
                 if ($mailer->save()) {
-                    return $this->redirect(['index', 'id' => $model->id]);
+                    return $this->redirect(['/super/customer/update', 'id' => $customer_id]);
                 }
             }
         } catch (\Exception $e) {
@@ -62,7 +61,6 @@ class DomainController extends Controller
 
     /**
      * Updates an existing SuperDomain model.
-     * If update is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
@@ -89,16 +87,14 @@ class DomainController extends Controller
 
     /**
      * Deletes an existing SuperDomain model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
      * @param integer $id
      * @return mixed
      */
-    public
-    function actionDelete(
-        $id
-    ) {
+    public function actionDelete($id)
+    {
         try {
-            $this->findModel($id)->delete();
+            $model = $this->findModel($id);
+            $model->delete();
         } catch (\Exception $e) {
             $msg = (isset($e->errorInfo[2])) ? $e->errorInfo[2] : $e->getMessage();
             \Yii::$app->getSession()->addFlash('error', $msg);
@@ -115,7 +111,7 @@ class DomainController extends Controller
 
             return $this->redirect($url);
         } else {
-            return $this->redirect(['index']);
+            return $this->redirect(['/super/customer/update', 'id' => $model->customer_id]);
         }
     }
 
@@ -126,10 +122,8 @@ class DomainController extends Controller
      * @return SuperDomain the loaded model
      * @throws HttpException if the model cannot be found
      */
-    protected
-    function findModel(
-        $id
-    ) {
+    protected function findModel($id)
+    {
         if (($model = SuperDomain::findOne($id)) !== null) {
             return $model;
         } else {
